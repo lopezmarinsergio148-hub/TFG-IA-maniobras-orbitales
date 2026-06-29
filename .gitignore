@@ -1,0 +1,26 @@
+# ── Entorno virtual (1,25 GB, NO se sube; se recrea con requirements) ──
+.venv/
+venv/
+env/
+
+# ── Cache de Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.ipynb_checkpoints/
+
+# ── IDE / editores ──
+.idea/
+.vscode/
+
+# ── Config local de Claude Code (permisos/ajustes de esta maquina) ──
+.claude/
+
+# ── Figuras generadas por la capa LLM en tiempo de ejecucion (se regeneran) ──
+imagenes/llm/
+
+# ── Sistema operativo ──
+Thumbs.db
+desktop.ini
+.DS_Store

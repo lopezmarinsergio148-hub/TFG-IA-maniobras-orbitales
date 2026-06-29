@@ -1,0 +1,162 @@
+PDS_VERSION_ID                = PDS3                                          
+RECORD_TYPE                   = FIXED_LENGTH                                  
+RECORD_BYTES                  = 119                                           
+FILE_RECORDS                  = 386                                           
+^TABLE                        = "UPPERATM.TAB"                                
+DATA_SET_ID                   = "GP-J-ASI-3-ENTRY-V1.0"                       
+INSTRUMENT_HOST_NAME          = "GALILEO PROBE"                               
+INSTRUMENT_NAME               = "ATMOSPHERIC STRUCTURE INSTRUMENT"            
+TARGET_NAME                   = "JUPITER"                                     
+START_TIME                    =  1995-12-07T22:01:44Z                         
+STOP_TIME                     =  1995-12-07T22:05:44Z                         
+PRODUCT_NAME                  = "UP_ATM_FILE_FOR_RES._INV"                    
+PRODUCT_ID                    = "UPPERATM.TAB"                                
+DESCRIPTION                   = "This file contains data for the Galileo Probe
+ Atmospheric Structure Instrument, including time from minor frame 0,         
+ altitude, pressure, temperature, atmospheric density, mean molecular weight, 
+ ratio of specific heats, gas constant, probe velocity, flight path angle,    
+ latitude and longitude for the entry phase."                                 
+PRODUCT_CREATION_TIME         =  1999-06-01                                   
+                                                                              
+OBJECT                        = TABLE                                         
+  INTERCHANGE_FORMAT            = ASCII                                       
+  ROWS                          = 386                                         
+  COLUMNS                       = 12                                          
+  ROW_BYTES                     = 119                                         
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "TIME"                                         
+    COLUMN_NUMBER            = 1                                              
+    UNIT                     = "SECONDS"                                      
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 1                                              
+    BYTES                    = 8                                              
+    FORMAT                   = "F8.3"                                         
+    DESCRIPTION              = "Time from minor frame 0"                      
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "ALTITUDE"                                     
+    COLUMN_NUMBER            = 2                                              
+    UNIT                     = "KM"                                           
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 12                                             
+    BYTES                    = 8                                              
+    FORMAT                   = "F8.3"                                         
+    DESCRIPTION              = "Altitude above 1-bar level"                   
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "PRESSURE"                                     
+    COLUMN_NUMBER            = 3                                              
+    UNIT                     = "MILLIBARS"                                    
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 23                                             
+    BYTES                    = 10                                             
+    FORMAT                   = "E10.4[E3]"                                    
+    DESCRIPTION              = "Ambient pressure"                             
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "TEMPERATURE"                                  
+    COLUMN_NUMBER            = 4                                              
+    UNIT                     = "KELVINS"                                      
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 36                                             
+    BYTES                    = 6                                              
+    FORMAT                   = "F6.2"                                         
+    DESCRIPTION              = "Atmospheric temperature"                      
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "DENSITY"                                      
+    COLUMN_NUMBER            = 5                                              
+    UNIT                     = "KG/M^3"                                       
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 45                                             
+    BYTES                    = 10                                             
+    FORMAT                   = "E10.4[E3]"                                    
+    DESCRIPTION              = "Atmospheric density"                          
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "MOLECULAR WEIGHT"                             
+    COLUMN_NUMBER            = 6                                              
+    UNIT                     = "AMU"                                          
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 58                                             
+    BYTES                    = 5                                              
+    FORMAT                   = "F5.3"                                         
+    DESCRIPTION              = "Mean molecular weight"                        
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "CP OVER CV"                                   
+    COLUMN_NUMBER            = 7                                              
+    UNIT                     = "N/A"                                          
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 66                                             
+    BYTES                    = 5                                              
+    FORMAT                   = "F5.3"                                         
+    DESCRIPTION              = "Ratio of specific heats"                      
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "R"                                            
+    COLUMN_NUMBER            = 8                                              
+    UNIT                     = "J/KG K"                                       
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 74                                             
+    BYTES                    = 6                                              
+    FORMAT                   = "F6.1"                                         
+    DESCRIPTION              = "Gas constant, R"                              
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "V_REL"                                        
+    COLUMN_NUMBER            = 9                                              
+    UNIT                     = "KM/S"                                         
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 83                                             
+    BYTES                    = 6                                              
+    FORMAT                   = "F6.3"                                         
+    DESCRIPTION              = "Velocity of Probe relative to rotating        
+                                atmosphere"                                   
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "FPA"                                          
+    COLUMN_NUMBER            = 10                                             
+    UNIT                     = "DEGREES"                                      
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 92                                             
+    BYTES                    = 7                                              
+    FORMAT                   = "F7.3"                                         
+    DESCRIPTION              = "Flight path angle relative to rotating        
+                                atmosphere (horizontal = 0 deg.)"             
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "LATITUDE"                                     
+    COLUMN_NUMBER            = 11                                             
+    UNIT                     = "DEGREES"                                      
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 102                                            
+    BYTES                    = 5                                              
+    FORMAT                   = "F5.2"                                         
+    DESCRIPTION              = "Planetocentric latitude"                      
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "LONGITUDE"                                    
+    COLUMN_NUMBER            = 12                                             
+    UNIT                     = "DEGREES"                                      
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 109                                            
+    BYTES                    = 6                                              
+    FORMAT                   = "F6.2"                                         
+    DESCRIPTION              = "System III longitude"                         
+  END_OBJECT               = COLUMN                                           
+                                                                              
+END_OBJECT                    = TABLE                                         
+END                                                                           

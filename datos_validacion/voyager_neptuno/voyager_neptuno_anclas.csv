@@ -1,0 +1,11 @@
+P_bar,T_K,nota_fuente
+1.7,78.0,nube CH4 ~1.7 bar (Lindal)
+1.0,72.0,1 bar (Lindal/GRAM)
+0.325,54.8,h=20 km (GRAM 54.8 K)
+0.1,52.0,TROPOPAUSA ~100 mbar (Voyager)
+0.03,58.0,estratosfera
+0.01,72.0,estratosfera
+0.001,110.0,estratosfera media
+0.0001,150.0,estratosfera alta
+1e-05,168.0,1e-5 bar 168 K (Bishop)
+1e-06,168.0,1e-6 bar (techo)

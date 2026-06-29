@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1F00.sch" schematypens="http://purl.oclc.org/dsdl/schematron" ?>
+<Product_Observational
+    xmlns="http://pds.nasa.gov/pds4/pds/v1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 
+        https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1F00.xsd">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:saturn_thermosphere_h2_density_temp:data:euv2017_175_19_31_30_st72_results</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Structure of Saturn's Thermosphere from Stellar Occultations on Occultation ST72</title>
+        <information_model_version>1.15.0.0</information_model_version>
+        <product_class>Product_Observational</product_class>
+    </Identification_Area>
+    <Observation_Area>
+        <Time_Coordinates>
+            <start_date_time>2017-06-24T19:31:30.000Z</start_date_time>
+            <stop_date_time>2017-06-24T20:36:08.008Z</stop_date_time>
+        </Time_Coordinates>
+        <Primary_Result_Summary>
+            <purpose>Science</purpose>
+            <processing_level>Derived</processing_level>
+      		<Science_Facets>
+                <domain>Atmosphere</domain>
+                <discipline_name>Atmospheres</discipline_name>
+      		    <facet1>Structure</facet1>
+      		</Science_Facets>
+        </Primary_Result_Summary>
+        <Investigation_Area>
+            <name>Cassini</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:investigation:mission.cassini-huygens</lid_reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <name>Observing system for Cassini Orbiter</name>
+            <Observing_System_Component>
+                <name>Cassini Orbiter</name>
+                <type>Host</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.co</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>ULTRAVIOLET IMAGING SPECTROGRAPH for CO</name>
+                <type>Instrument</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:uvis.co</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>COMPOSITE INFRARED SPECTROMETER for CO</name>
+                <type>Instrument</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:cirs.co</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>Saturn</name>
+            <type>Planet</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:target:planet.saturn</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+    </Observation_Area>
+    <Reference_List>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:saturn_thermosphere_h2_density_temp:document:saturn_thermosphere_doc</lid_reference>
+            <reference_type>data_to_document</reference_type>
+        </Internal_Reference>
+    </Reference_List>
+    <File_Area_Observational>
+        <File>
+            <file_name>EUV2017_175_19_31_30_ST72_results.csv</file_name>
+            <local_identifier>euv2017_175_19_31_30_st72_results.csv</local_identifier>
+            <creation_date_time>2018-08-02T10:30:00Z</creation_date_time>
+            <file_size unit="byte">16716</file_size>
+            <records>196</records>
+        </File>
+        <Table_Delimited>
+            <name>EUV2017_175_19_31_30_ST72_results  </name>
+            <local_identifier> euv2017_175_19_31_30_st72_results</local_identifier>
+            <offset unit="byte">0</offset>
+            <object_length unit="byte">16716</object_length>
+            <parsing_standard_id>PDS DSV 1</parsing_standard_id>
+            <description>
+              PLEASE CITE: Koskinen, T.T., Strobel, D.F., Brown, Z., 2021. 
+              An empirical model of the Saturn thermosphere
+ 
+              Occultation: ST72
+              Isothermal fit temperature (1800-2700 km): 470 (16) K
+              See Appendix in Koskinen et al.(2015) prior to use of the 
+              results in this file.
+            </description>
+            <records>196</records>
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+            <field_delimiter>Comma</field_delimiter>
+            <Record_Delimited>
+                <fields>10 </fields>
+                <groups>0</groups>
+                <Field_Delimited>
+                    <name>Altitude </name>
+                    <field_number>1</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>km</unit>
+                    <description>
+                      Tangent altitude measured along surface normal
+                      and is shortest distance between LOS and the
+                      1 bar level on Saturn
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name>Radius </name>
+                    <field_number>2</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>km </unit>
+                    <description>
+                       Radial distance from the center of Saturn.
+                      Described in Koskinen et al. 2015.
+                       Icarus 260, 174-189
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name>Latitude </name>
+                    <field_number>3</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>degrees</unit>
+                    <description>
+                      Planetocentric latitude of observation
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name>Longitude </name>
+                    <field_number>4</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>degrees</unit>
+                    <description>
+                      NAIF planetocentric longitude as returned by 
+                      NPEDLN and converted by RECLAT
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name> Number density</name>
+                    <field_number>5</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit> 1/m**3</unit>
+                    <description>
+                      Direct retrieval (inversion) molecular hydrogen number 
+                      density 
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name> Number density error </name>
+                    <field_number>6</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>1/m**3 </unit>
+                    <description>
+                      Uncertainty in number density 
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name>Temperature </name>
+                    <field_number>7</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>K</unit>
+                    <description>
+                      Direct retrieval (inversion) temperature
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name> Temperature error </name>
+                    <field_number>8</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>K</unit>
+                    <description>
+                      Uncertainty in temperature 
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name>FMNden </name>
+                    <field_number>9</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>1/m**3</unit>
+                    <description>
+                      Forward model number density. 
+                      Note that this extends to higher altitudes than 
+                      direct retrieval.  It is best fit, NOT extrapolation. 
+                      Transmission gets too noisy for reasonable inversion 
+                      at high altitudes.
+                    </description>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name>FMTemp </name>
+                    <field_number>10</field_number>
+                    <data_type>ASCII_Real</data_type>
+                    <unit>K</unit>
+                    <description>
+                      Forward model temperature profile. 
+                      This can be treated as the mean state.  Shape may be 
+                      uncertain for low S/N occultations.
+                    </description>
+                </Field_Delimited>
+            </Record_Delimited>
+        </Table_Delimited>
+    </File_Area_Observational>
+    <File_Area_Observational_Supplemental>
+        <File>
+            <file_name>EUV2017_175_19_31_30_ST72_results.dat</file_name>
+            <local_identifier>euv2017_175_19_31_30_st72_results.dat</local_identifier>
+            <creation_date_time>2018-08-02T10:30:00Z</creation_date_time>
+            <file_size unit="byte">26650</file_size>
+            <records>213</records>
+        </File>
+        <Stream_Text>
+            <local_identifier>EUV2017_175_19_31_30_ST72.DAT </local_identifier>
+            <offset unit="byte">0</offset>
+            <object_length unit="byte">26650</object_length>
+            <parsing_standard_id>7-Bit ASCII Text</parsing_standard_id>
+            <description>
+                Full original data files with header, column headings and 
+                footer
+            </description>
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+        </Stream_Text>
+    </File_Area_Observational_Supplemental>
+</Product_Observational>

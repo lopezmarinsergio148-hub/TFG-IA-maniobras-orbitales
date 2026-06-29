@@ -1,0 +1,89 @@
+PDS_VERSION_ID                = PDS3                                          
+RECORD_TYPE                   = FIXED_LENGTH                                  
+RECORD_BYTES                  = 68                                            
+FILE_RECORDS                  = 307                                           
+^TABLE                        = "LOWERATM.TAB"                                
+DATA_SET_ID                   = "GP-J-ASI-3-ENTRY-V1.0"                       
+INSTRUMENT_HOST_NAME          = "GALILEO PROBE"                               
+INSTRUMENT_NAME               = "ATMOSPHERIC STRUCTURE INSTRUMENT"            
+TARGET_NAME                   = JUPITER                                       
+START_TIME                    = "UNK"                                         
+STOP_TIME                     = "UNK"                                         
+PRODUCT_NAME                  = "AD_DESC_FOR_PDS"                             
+PRODUCT_ID                    = "AD_DESC_FOR_PDS"                             
+PRODUCT_CREATION_TIME         =  1998-09-15                                   
+                                                                              
+OBJECT                        = TABLE                                         
+  INTERCHANGE_FORMAT            = ASCII                                       
+  ROWS                          = 307                                         
+  COLUMNS                       = 6                                           
+  ROW_BYTES                     = 68                                          
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "TIME"                                         
+    COLUMN_NUMBER            = 1                                              
+    UNIT                     = "SECONDS"                                      
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 1                                              
+    BYTES                    = 10                                             
+    FORMAT                   = "F10.5"                                        
+    DESCRIPTION              = ""                                             
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "PRESSURE"                                     
+    COLUMN_NUMBER            = 2                                              
+    UNIT                     = "BARS"                                         
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 13                                             
+    BYTES                    = 7                                              
+    FORMAT                   = "F7.5"                                         
+    DESCRIPTION              = ""                                             
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "TEMPERATURE"                                  
+    COLUMN_NUMBER            = 3                                              
+    UNIT                     = "KELVINS"                                      
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 25                                             
+    BYTES                    = 9                                              
+    FORMAT                   = "F9.5"                                         
+    DESCRIPTION              = ""                                             
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "DENSITY"                                      
+    COLUMN_NUMBER            = 4                                              
+    UNIT                     = "KG/M^3"                                       
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 37                                             
+    BYTES                    = 7                                              
+    FORMAT                   = "F7.5"                                         
+    DESCRIPTION              = ""                                             
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "ALTITUDE"                                     
+    COLUMN_NUMBER            = 5                                              
+    UNIT                     = "KM"                                           
+    DATA_TYPE                = ASCII_INTEGER                                  
+    START_BYTE               = 49                                             
+    BYTES                    = 10                                             
+    FORMAT                   = "F10.5"                                        
+    DESCRIPTION              = ""                                             
+  END_OBJECT               = COLUMN                                           
+                                                                              
+  OBJECT                   = COLUMN                                           
+    NAME                     = "GRAVITY"                                      
+    COLUMN_NUMBER            = 6                                              
+    UNIT                     = "M/S^2"                                        
+    DATA_TYPE                = ASCII_REAL                                     
+    START_BYTE               = 61                                             
+    BYTES                    = 6                                              
+    FORMAT                   = "F6.3"                                         
+    DESCRIPTION              = ""                                             
+  END_OBJECT               = COLUMN                                           
+                                                                              
+END_OBJECT                    = TABLE                                         
+END                                                                           
