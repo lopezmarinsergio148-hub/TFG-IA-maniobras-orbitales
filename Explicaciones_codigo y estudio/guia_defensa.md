@@ -514,7 +514,45 @@ física ya fija el Δv y la heurística es casi óptima). El agente **nunca es p
 
 ---
 
-## 6. Repaso de los scripts: qué defender y qué es "fontanería"
+## 6. IA — Capa de orquestación: el asistente conversacional (Bloque 5)
+
+**Qué es:** una capa por encima de los 5 agentes de RL y los solvers clásicos que convierte
+todo el sistema en un **asistente al que se le habla en lenguaje natural**. Pides "llévame a
+GEO desde 400 km" y te lo resuelve y lo explica.
+
+**El patrón — tool use (function calling):** el LLM **NO calcula nada**; **orquesta**. Flujo:
+petición en lenguaje natural → el LLM **elige la herramienta** y sus argumentos → **nuestro
+código** ejecuta el agente/solver **REAL** → el LLM **explica** los números reales. Es la
+**regla de oro** del proyecto aplicada a la propia IA: solo cifras de las herramientas,
+nunca inventadas.
+
+**13 herramientas:** 5 de **cálculo** (una por agente de RL + el solver de Lambert) + 8 de
+**dibujo**.
+
+**Anclaje anti-alucinación:** el *system prompt* obliga a usar **solo** los números que
+devuelven las herramientas, y acota el asistente al dominio (declina lo ajeno a la
+astrodinámica).
+
+**Modelo OPEN y gratuito (recomendación de la dirección):** Llama 3.3 70B servido por Groq,
+con API compatible OpenAI. La **arquitectura es independiente del proveedor** (solo cambia
+el cliente). *(Aclaración por si lo preguntan: una suscripción de chat ≠ una API key; de ahí
+el uso de un modelo abierto y gratuito.)*
+
+**Detalles defendibles:** bucle de tool use **manual** (más transparente que el automático)
++ **multi-ronda** (encadena, p. ej., planificar y luego dibujar) + **memoria conversacional**
+("ahora lo mismo en Marte" recuerda las altitudes anteriores).
+
+**Posibles preguntas del tribunal:**
+- *"¿La IA se inventa los números?"* → No: el LLM no calcula; ejecuta los agentes/solvers
+  reales y solo **explica** sus cifras (tool use + regla de oro en el system prompt).
+- *"¿Por qué un modelo abierto y no uno de pago?"* → recomendación de la dirección; es
+  gratuito y suficiente para el tool use, y la arquitectura no depende del proveedor.
+- *"Si los agentes ya calculan, ¿qué aporta el LLM?"* → la **interfaz en lenguaje natural** y
+  la **orquestación** (elegir herramienta, encadenar, explicar): accesibilidad, no cálculo.
+
+---
+
+## 7. Repaso de los scripts: qué defender y qué es "fontanería"
 
 > Lectura transversal de los 9 scripts de `ia/` (3 entornos + 3 train + 3 evaluar +
 > baselines). La idea: si el tribunal abre un archivo, saber **qué líneas son decisiones
