@@ -20,11 +20,12 @@ import json
 from openai import OpenAI, RateLimitError, APIError
 
 from llm_herramientas import (planificar_transferencia, planificar_aerofrenado,
-                              planificar_cambio_plano, transferencia_interplanetaria)
+                              planificar_cambio_plano, planificar_mantenimiento,
+                              transferencia_interplanetaria)
 from llm_figuras import (dibujar_transferencia, dibujar_aerofrenado,
                          dibujar_aerofrenado_orbitas, dibujar_interplanetaria,
                          dibujar_interplanetaria_3d, dibujar_cambio_plano_3d,
-                         dibujar_porkchop)
+                         dibujar_mantenimiento, dibujar_porkchop)
 
 sys.stdout.reconfigure(encoding="utf-8")        # evita errores de acentos en Windows
 
@@ -270,6 +271,52 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "planificar_mantenimiento",
+            "description": ("Planifica el MANTENIMIENTO ORBITAL (station-keeping) de una órbita "
+                            "circular a una altitud dada: cuánto combustible (Δv al año) hace "
+                            "falta para mantenerla contra el rozamiento atmosférico, si es "
+                            "viable y cuánto precesa el plano por el achatamiento (J2). Úsala "
+                            "cuando el usuario pregunte por mantener/conservar una órbita, el "
+                            "coste de station-keeping o cuánto dura una órbita. Solo en cuerpos "
+                            "CON atmósfera (sin aire la órbita no se degrada)."),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "planeta": {"type": "string",
+                                "description": "cuerpo CON atmósfera: tierra, marte, venus, jupiter, saturno, urano o neptuno"},
+                    "h_km": {"type": "number", "description": "altitud de la órbita circular a mantener, en km"},
+                    "inclinacion_grados": {"type": "number",
+                                           "description": "inclinación de la órbita en grados (OPCIONAL; por defecto 51.6, la de la ISS)"},
+                },
+                "required": ["planeta", "h_km"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "dibujar_mantenimiento",
+            "description": ("Dibuja el MANTENIMIENTO ORBITAL: la altitud frente al tiempo "
+                            "durante un año, con el ciclo de caer y re-boostear, comparando el "
+                            "agente (altitud estable) con la estrategia ingenua (diente de "
+                            "sierra) y la banda de tolerancia. Úsala cuando el usuario pida "
+                            "ver/dibujar el mantenimiento o el station-keeping de una órbita."),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "planeta": {"type": "string",
+                                "description": "cuerpo CON atmósfera: tierra, marte, venus, jupiter, saturno, urano o neptuno"},
+                    "h_km": {"type": "number", "description": "altitud de la órbita a mantener, en km"},
+                    "inclinacion_grados": {"type": "number",
+                                           "description": "inclinación en grados (OPCIONAL; por defecto 51.6)"},
+                },
+                "required": ["planeta", "h_km"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "dibujar_aerofrenado_orbitas",
             "description": ("Dibuja cómo la ÓRBITA se encoge y circulariza durante un "
                             "aerofrenado: varias órbitas superpuestas, de la elíptica inicial "
@@ -294,6 +341,7 @@ TOOLS = [
 DISPATCH = {"planificar_transferencia": planificar_transferencia,
             "planificar_aerofrenado": planificar_aerofrenado,
             "planificar_cambio_plano": planificar_cambio_plano,
+            "planificar_mantenimiento": planificar_mantenimiento,
             "transferencia_interplanetaria": transferencia_interplanetaria,
             "dibujar_transferencia": dibujar_transferencia,
             "dibujar_aerofrenado": dibujar_aerofrenado,
@@ -301,12 +349,14 @@ DISPATCH = {"planificar_transferencia": planificar_transferencia,
             "dibujar_interplanetaria_3d": dibujar_interplanetaria_3d,
             "dibujar_cambio_plano_3d": dibujar_cambio_plano_3d,
             "dibujar_aerofrenado_orbitas": dibujar_aerofrenado_orbitas,
+            "dibujar_mantenimiento": dibujar_mantenimiento,
             "dibujar_porkchop": dibujar_porkchop}
 
 SYSTEM = (
     "Eres un asistente ESPECIALIZADO en planificación de maniobras orbitales y astrodinámica. "
-    "Ayudas con tres tipos de maniobra: transferencias entre órbitas, aerofrenado y viajes "
-    "interplanetarios. Para cualquier CÁLCULO debes usar las herramientas disponibles; tú no "
+    "Ayudas con varios tipos de maniobra: transferencias entre órbitas (con o sin cambio de "
+    "plano), aerofrenado, mantenimiento orbital (station-keeping) y viajes interplanetarios. "
+    "Para cualquier CÁLCULO debes usar las herramientas disponibles; tú no "
     "calculas nada por tu cuenta. REGLA ABSOLUTA: usa EXCLUSIVAMENTE los números que devuelven "
     "las herramientas; nunca inventes ni estimes cifras. Si una herramienta devuelve un 'error' "
     "(p. ej. aerofrenado en un cuerpo sin atmósfera), explícaselo al usuario con naturalidad. "

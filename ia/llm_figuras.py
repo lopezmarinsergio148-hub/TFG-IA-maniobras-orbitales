@@ -29,9 +29,11 @@ from poliastro.twobody import Orbit
 from env_transfer import TransferEnv
 from env_drag import AeroBrakingEnv
 from env_transfer3d import Transfer3DEnv
+from env_keep import KeepEnv, BANDA_KM
 from baselines import delta_v_hohmann
 from llm_herramientas import (CUERPOS, _cargar_transfer, _cargar_drag, _cargar_transfer3d,
-                              PLANETAS_AEROFRENADO, PLANETAS_SOL, mejor_tof_dias,
+                              _cargar_keep, _ingenua_keep, PLANETAS_AEROFRENADO,
+                              PLANETAS_MANTENIMIENTO, PLANETAS_SOL, mejor_tof_dias,
                               tof_hohmann_dias)
 
 _AU_KM = 1.495978707e8                 # 1 unidad astronómica en km
@@ -498,6 +500,67 @@ def dibujar_aerofrenado_orbitas(planeta, apo_ini_km, apo_obj_km, abrir=True):
         return {"error": f"No se pudo dibujar el aerofrenado ({type(e).__name__}): {e}"}
 
 
+def dibujar_mantenimiento(planeta, h_km, inclinacion_grados=51.6, abrir=True):
+    """
+    Dibuja el MANTENIMIENTO ORBITAL (station-keeping) a altitud h_km en 'planeta':
+    la altitud frente al tiempo durante un año, mostrando el ciclo caer/re-boostear.
+    Compara el AGENTE 5 (mantiene la altitud estable) con la estrategia ingenua
+    (diente de sierra) y marca la banda de tolerancia. Guarda un PNG y devuelve su ruta.
+    """
+    planeta = str(planeta).lower().strip()
+    if planeta not in PLANETAS_MANTENIMIENTO:
+        return {"error": f"No hay agente de mantenimiento para '{planeta}'. Solo cuerpos con "
+                         f"atmósfera: {PLANETAS_MANTENIMIENTO} (sin aire no hay nada que mantener)."}
+    if float(h_km) <= 0:
+        return {"error": "La altitud debe ser positiva."}
+    try:
+        model = _cargar_keep(planeta)
+        opts = {"h_obj_km": float(h_km), "inc_deg": float(inclinacion_grados)}
+
+        env = KeepEnv(planeta=planeta, aleatorio=False)
+        obs, _ = env.reset(options=opts)
+        h_ag = [env._h(env.a) / 1000.0]
+        term = trunc = False
+        while not (term or trunc):
+            accion, _ = model.predict(obs, deterministic=True)
+            obs, _, term, trunc, info = env.step(accion)
+            h_ag.append(info["h_km"])
+
+        env2 = KeepEnv(planeta=planeta, aleatorio=False)
+        obs, _ = env2.reset(options=opts)
+        h_in = [env2._h(env2.a) / 1000.0]
+        term = trunc = False
+        while not (term or trunc):
+            obs, _, term, trunc, info = env2.step(_ingenua_keep(env2))
+            h_in.append(info["h_km"])
+
+        h_obj = float(h_km)
+        fig, ax = plt.subplots(figsize=(9, 5))
+        ax.axhspan(h_obj - BANDA_KM, h_obj + BANDA_KM, color="#2a2a4a", alpha=0.5,
+                   label=f"Banda de tolerancia (±{BANDA_KM:.0f} km)")
+        ax.axhline(h_obj, color="#bbbbbb", ls=":", lw=1.2, label=f"Objetivo ({h_obj:.0f} km)")
+        ax.plot(np.arange(len(h_in)), h_in, color="#f87171", lw=1.5, ls="--",
+                label="Estrategia ingenua (diente de sierra)")
+        ax.plot(np.arange(len(h_ag)), h_ag, color="#4ade80", lw=1.8,
+                label="Agente RL (mantiene la altitud estable)")
+        ax.set_xlabel("Tiempo (días)")
+        ax.set_ylabel("Altitud (km)")
+        ax.set_title(f"Mantenimiento orbital en {planeta.capitalize()}: "
+                     f"{h_obj:.0f} km durante un año")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="lower left", facecolor="#15152a", edgecolor="#555",
+                  labelcolor="#eee", fontsize=9)
+
+        ruta = os.path.join(IMG, f"mantenimiento_{planeta}_{int(h_km)}.png")
+        fig.savefig(ruta, dpi=150, bbox_inches="tight", facecolor=FONDO)
+        plt.close(fig)
+        if abrir:
+            _abrir_imagen(ruta)
+        return {"figura_png": ruta, "planeta": planeta, "altitud_km": float(h_km)}
+    except Exception as e:
+        return {"error": f"No se pudo dibujar el mantenimiento ({type(e).__name__}): {e}"}
+
+
 def dibujar_porkchop(origen, destino, fecha_centro, abrir=True):
     """
     Genera el PORKCHOP de un viaje interplanetario: un mapa del Δv total según la
@@ -576,3 +639,6 @@ if __name__ == "__main__":
     print("\nPRUEBA de dibujar_aerofrenado:")
     for planeta, a1, a2 in [("marte", 6000, 400)]:
         print(json.dumps(dibujar_aerofrenado(planeta, a1, a2, abrir=False), ensure_ascii=True))
+    print("\nPRUEBA de dibujar_mantenimiento:")
+    for planeta, h in [("tierra", 420), ("marte", 171)]:
+        print(json.dumps(dibujar_mantenimiento(planeta, h, abrir=False), ensure_ascii=True))

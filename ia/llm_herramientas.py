@@ -25,6 +25,7 @@ from poliastro.iod import lambert
 from env_transfer import TransferEnv
 from env_drag import AeroBrakingEnv
 from env_transfer3d import Transfer3DEnv
+from env_keep import KeepEnv, BANDA_KM
 from baselines import delta_v_hohmann, delta_v_hohmann_plano
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -91,10 +92,15 @@ def mejor_tof_dias(body_o, body_d, t0, n=40):
             continue
     return mejor_tof
 
+# Cuerpos con agente de MANTENIMIENTO orbital: los mismos 7 con atmósfera (sin
+# atmósfera no hay rozamiento -> la órbita no se degrada -> nada que mantener).
+PLANETAS_MANTENIMIENTO = PLANETAS_AEROFRENADO
+
 # Modelos cargados una sola vez (perezoso: solo al usarse)
 _modelo_transfer = None
 _modelo_transfer3d = None
 _modelos_drag = {}
+_modelos_keep = {}
 
 
 def _cargar_transfer():
@@ -116,6 +122,19 @@ def _cargar_drag(planeta):
         _modelos_drag[planeta] = PPO.load(
             os.path.join(AQUI, "modelo_drag", planeta, "best_model"))
     return _modelos_drag[planeta]
+
+
+def _cargar_keep(planeta):
+    if planeta not in _modelos_keep:
+        _modelos_keep[planeta] = PPO.load(
+            os.path.join(AQUI, "modelo_keep", planeta, "best_model"))
+    return _modelos_keep[planeta]
+
+
+def _ingenua_keep(env):
+    """Política ingenua de mantenimiento: re-boost a tope al caer media banda."""
+    desv_km = (env.a - env.a_obj) / 1000.0
+    return np.array([1.0 if desv_km < -BANDA_KM * 0.5 else -1.0], dtype=np.float32)
 
 
 def planificar_transferencia(planeta, h1_km, h2_km):
@@ -249,6 +268,61 @@ def planificar_cambio_plano(planeta, h1_km, h2_km, inclinacion_grados):
     }
 
 
+def planificar_mantenimiento(planeta, h_km, inclinacion_grados=51.6):
+    """
+    Planifica el MANTENIMIENTO ORBITAL (station-keeping) de una órbita circular a
+    altitud h_km en 'planeta', con el AGENTE 5 (RL). El agente compensa con re-boost
+    la caída por rozamiento para mantener la órbita dentro de una banda durante un
+    año. Devuelve el Δv/año del agente, el de la estrategia ingenua de contraste, el
+    ahorro, si mantiene la órbita y cuánto precesa el plano (Ω) por J2 (que NO se
+    corrige). Solo en cuerpos con atmósfera (sin aire no hay nada que mantener).
+    """
+    planeta = str(planeta).lower().strip()
+    if planeta not in PLANETAS_MANTENIMIENTO:
+        return {"error": f"No hay agente de mantenimiento para '{planeta}'. Solo cuerpos con "
+                         f"atmósfera: {PLANETAS_MANTENIMIENTO}. Sin atmósfera (Luna, Mercurio) "
+                         f"la órbita no se degrada por rozamiento y no hay nada que mantener."}
+    if float(h_km) <= 0:
+        return {"error": "La altitud debe ser positiva."}
+
+    model = _cargar_keep(planeta)
+    env = KeepEnv(planeta=planeta, aleatorio=False)
+    obs, _ = env.reset(options={"h_obj_km": float(h_km), "inc_deg": float(inclinacion_grados)})
+    franja_lo, franja_hi = env.h_op_min / 1000.0, env.h_op_max / 1000.0
+    term = trunc = False
+    info = {}
+    while not (term or trunc):
+        accion, _ = model.predict(obs, deterministic=True)
+        obs, _, term, trunc, info = env.step(accion)
+    dv_agente = info.get("dv_acum", 0.0)
+
+    env2 = KeepEnv(planeta=planeta, aleatorio=False)
+    obs, _ = env2.reset(options={"h_obj_km": float(h_km), "inc_deg": float(inclinacion_grados)})
+    term = trunc = False
+    info2 = {}
+    while not (term or trunc):
+        obs, _, term, trunc, info2 = env2.step(_ingenua_keep(env2))
+    dv_ingenua = info2.get("dv_acum", 0.0)
+
+    return {
+        "planeta": planeta,
+        "altitud_km": float(h_km),
+        "inclinacion_grados": float(inclinacion_grados),
+        "mantiene_la_orbita_un_ano": bool(info.get("exito")),
+        "dv_agente_m_s_por_ano": round(dv_agente, 1),
+        "dv_estrategia_ingenua_m_s_por_ano": round(dv_ingenua, 1),
+        "ahorro_sobre_ingenua_pct": round((1.0 - dv_agente / dv_ingenua) * 100.0, 1)
+                                    if dv_ingenua > 0 else 0.0,
+        "franja_operativa_km": f"{franja_lo:.0f}-{franja_hi:.0f}",
+        "precesion_nodal_J2_grados_por_ano": round(info.get("raan_deg", 0.0), 0),
+        "nota": ("El Δv de mantenimiento lo fija casi del todo la física (reponer la energía "
+                 "que el rozamiento quita), así que el ahorro frente a la heurística suele ser "
+                 "pequeño salvo donde el control fino importa. El J2 hace precesar el plano (Ω) "
+                 "pero NO se corrige (sería carísimo e irrealista). Si 'mantiene_la_orbita' es "
+                 "falso, la altitud pedida queda fuera del alcance útil para ese cuerpo."),
+    }
+
+
 def transferencia_interplanetaria(origen, destino, fecha_salida, dias_vuelo=None):
     """
     Calcula una transferencia INTERPLANETARIA entre dos planetas resolviendo el
@@ -307,6 +381,10 @@ if __name__ == "__main__":
     for planeta, a1, a2 in [("marte", 6000, 400), ("tierra", 3000, 500)]:
         print(f"  {planeta} {a1}->{a2}: ",
               json.dumps(planificar_aerofrenado(planeta, a1, a2), ensure_ascii=True))
+    print("\n-- planificar_mantenimiento --")
+    for planeta, h in [("tierra", 420), ("marte", 171), ("luna", 100)]:
+        print(f"  {planeta} {h} km: ",
+              json.dumps(planificar_mantenimiento(planeta, h), ensure_ascii=True))
     print("\n-- transferencia_interplanetaria --")
     for o, d, f, dv in [("tierra", "marte", "2026-11-01", 250), ("tierra", "venus", "2026-10-01", 150)]:
         print(f"  {o}->{d} ({f}, {dv}d): ",
