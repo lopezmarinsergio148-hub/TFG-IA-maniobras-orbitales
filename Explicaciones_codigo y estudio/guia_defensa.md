@@ -459,15 +459,58 @@ física y realismo frente a misiones reales."
 - Atmósfera **determinista** → el óptimo es el borde (perigeo más profundo seguro). Con
   **incertidumbre atmosférica** el agente tendría que mantener un margen (extensión realista).
 
-### Extensión propuesta: mantenimiento orbital (corregir J2 y arrastre)
-Un agente que **corrija las perturbaciones** para mantener la órbita deseada con impulsos
-mínimos. Bien planteado físicamente:
-- **J2** produce derivas seculares en el **RAAN (Ω)** y el **argumento del perigeo (ω)**
-  → el agente las **compensa** para mantener la orientación de la órbita. *(Recordatorio:
-  J2 NO toca la inclinación `i`; precesa Ω y ω.)*
-- **Arrastre** baja la órbita → el agente la **reimpulsa** (re-boost) para mantener la altitud.
-- Reutilizaría la **física J2 + drag ya validada** (propagador de Cowell / verificación de
-  Brouwer). Requiere un entorno **3D** (seguir Ω, ω, i, a) → extensión de mayor alcance.
+### Agente 5: mantenimiento orbital (station-keeping) — IMPLEMENTADO
+**Qué es:** el quinto agente. Mantiene una órbita operativa frente a las perturbaciones a
+lo largo del tiempo. Es un problema **temporal multi-paso** (la órbita se degrada poco a
+poco y hay que decidir cuándo/cuánto corregir), a diferencia de los otros agentes, que son
+de un solo impulso o una sola maniobra.
+
+**Qué corrige y qué NO (clave física, MUY preguntable):**
+- El **arrastre** baja el semieje y circulariza la órbita → el agente lo corrige con
+  **re-boost** para mantener la geometría (a, e, i) dentro de una banda. ESTO es lo que hace.
+- El **J2 NO degrada la geometría**: en media secular deja a, e, i constantes; solo
+  **precesa la orientación** (Ω y ω). → **NO se combate**; se modela y se contabiliza, pero
+  no se corrige. *(OJO: esto corrige el plan inicial, que hablaba de "compensar Ω y ω".)*
+  Corregir esa precesión sería fuera de plano y **carísimo/irrealista** — las órbitas
+  heliosíncronas hasta la **aprovechan**.
+- En la Luna y Mercurio (sin atmósfera) la geometría no se degrada → **nada que mantener**,
+  excluidos (igual que en el aerofrenado).
+
+**Cómo:** física **secular analítica** (rápida, sin Cowell por paso): `da/dt =
+−(Cd·A/m)·ρ·v·a`, con ρ del **modelo atmosférico validado**; la precesión de Ω se sigue con
+la **fórmula de J2 verificada vs Brouwer**. Episodio = **misión de duración fija**;
+objetivo: mantener en banda con el mínimo Δv. **Especialista por planeta** (como el
+aerofrenado: la atmósfera no es invariante de escala). La **franja de altitudes** de cada
+cuerpo **se deriva de su atmósfera** (donde mantener cuesta 2–250 m/s/año), como el
+corredor de perigeo del aerofrenado.
+
+**Resultado:** los 7 cuerpos con atmósfera, **30/30** escenarios aleatorios cada uno.
+Ahorro frente a la estrategia ingenua **según el régimen**: Marte **~45 %** (franja
+estrecha + altura de escala pequeña → el control fino importa), gigantes **~0–2 %** (la
+física ya fija el Δv y la heurística es casi óptima). El agente **nunca es peor**.
+
+**Lecciones (ORO para la defensa):**
+- **El Δv de mantenimiento está casi FIJADO por la física** (repone la energía que el
+  arrastre quita) → no se puede "ahorrar por arte de magia"; el ahorro es marginal y
+  **honesto**. El valor real del agente es la **generalización**, no el ahorro.
+- **Reward hacking → bonus de supervivencia:** con una recompensa solo negativa, al agente
+  le salía a cuenta **"suicidarse"** (salirse pronto = un castigo único < acumular
+  negativos toda la misión). Se arregló premiando **cada día** mantenido en banda.
+- **El tope del re-boost se ata a la BANDA, no a la velocidad:** escalarlo por la velocidad
+  circular hacía que en los gigantes un re-boost moviera el semieje **4× la banda** → se
+  "pasaba de largo" (la heurística parecía fallar por **artefacto**, no por física). Se ató
+  al ancho de banda vía `Δa ≈ 2a·Δv/v`. *(Bug detectado al evaluar y corregido: honestidad.)*
+- **Validación bonita:** la regresión nodal sale **~−5°/día para una órbita tipo ISS**, que
+  coincide con la **real** de la estación → la fórmula secular de J2 clava la precesión.
+
+**Preguntas del tribunal probables:**
+- *"¿Por qué no corriges el J2?"* → porque J2 no degrada la geometría (a, e, i), solo gira
+  la órbita; corregir esa rotación es fuera de plano y carísimo, no se hace en la práctica.
+  Mantener la geometría = corregir el arrastre.
+- *"¿El agente ahorra combustible?"* → poco, y es honesto: el Δv lo fija la física. El valor
+  es la generalización (un mismo diseño mantiene los 7 cuerpos).
+- *"¿Por qué un especialista por planeta y no uno universal?"* → como el aerofrenado: la
+  atmósfera no es invariante de escala, a diferencia de las transferencias keplerianas.
 
 ---
 
