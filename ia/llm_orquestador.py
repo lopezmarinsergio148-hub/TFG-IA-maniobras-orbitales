@@ -16,6 +16,7 @@
 import os
 import sys
 import json
+import textwrap
 
 from openai import OpenAI, RateLimitError, APIError
 
@@ -367,6 +368,16 @@ SYSTEM = (
 )
 
 
+def _envolver(texto, ancho=88):
+    """Envuelve la respuesta a un ancho fijo (respetando los saltos de línea ya
+    presentes) para que el texto largo no salga en un único renglón: así se lee mejor
+    en pantalla y CABE en una captura para la memoria."""
+    if not texto:
+        return texto
+    return "\n".join(textwrap.fill(p, width=ancho) if p.strip() else ""
+                     for p in texto.split("\n"))
+
+
 def responder(mensajes, verbose=True, max_rondas=5):
     """
     Procesa el último turno de la conversación con el bucle de tool use. Recibe la
@@ -431,7 +442,7 @@ def chat():
             break
         mensajes.append({"role": "user", "content": p})
         print("\n--- Asistente:")
-        print(responder(mensajes))
+        print(_envolver(responder(mensajes)))
 
 
 if __name__ == "__main__":
@@ -441,6 +452,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         msgs = [{"role": "system", "content": SYSTEM},
                 {"role": "user", "content": " ".join(sys.argv[1:])}]
-        print(responder(msgs))
+        print(_envolver(responder(msgs)))
     else:
         chat()
