@@ -1,3 +1,9 @@
+# ── Secretos / claves API (NUNCA subir; van en variables de entorno) ──
+Clave API*
+*.key
+*.env
+.env
+
 # ── Entorno virtual (1,25 GB, NO se sube; se recrea con requirements) ──
 .venv/
 venv/
