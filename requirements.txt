@@ -1,0 +1,25 @@
+# Dependencias del TFG "IA para maniobras orbitales"
+# Versiones congeladas del entorno de desarrollo (Python 3.11).
+# Instalación:  pip install -r requirements.txt
+
+# --- Núcleo científico ---
+numpy==1.26.4
+scipy==1.15.3
+matplotlib==3.7.3
+pandas==2.3.0
+
+# --- Astrodinámica ---
+poliastro==0.17.0
+astropy==5.3.4
+ussa1976==0.3.4
+
+# --- Aprendizaje por refuerzo (agentes) ---
+gymnasium==1.2.3
+stable-baselines3==2.8.0
+torch==2.12.0
+
+# --- Visualización interactiva 3D ---
+plotly==5.24.1
+
+# --- Capa LLM (cliente compatible OpenAI apuntando a Groq) ---
+openai==2.44.0
