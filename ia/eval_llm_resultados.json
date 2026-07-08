@@ -1,0 +1,398 @@
+{
+  "00": {
+    "categoria": "transferencia",
+    "prompt": "Quiero subir un satelite de una orbita de 400 km a otra de 1500 km alrededor de la Tierra.",
+    "tool_esperada": "planificar_transferencia",
+    "args_esperados": {
+      "planeta": "tierra",
+      "h1_km": 400,
+      "h2_km": 1500
+    },
+    "final": "Para subir un satélite de una órbita de 400 km a otra de 1500 km alrededor de la Tierra, el Delta-v del agente de IA es de 0.5702 km/s y el óptimo de Hohmann es de 0.5547 km/s. El agente tiene un exceso de 2.8% sobre el óptimo de Hohmann, lo que significa que utiliza un poco más de combustible para llegar a la órbita final. Sin embargo, el error de llegada es del 0.44%, lo que indica que el satélite llegará muy cerca de la órbita deseada.",
+    "tools_llamadas": [
+      "planificar_transferencia"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "01": {
+    "categoria": "transferencia",
+    "prompt": "Cuanto Delta-v necesito para bajar de 20000 a 500 km en Marte?",
+    "tool_esperada": "planificar_transferencia",
+    "args_esperados": {
+      "planeta": "marte",
+      "h1_km": 20000,
+      "h2_km": 500
+    },
+    "final": "Para bajar de 20000 km a 500 km en Marte, necesitas un Delta-v de 1.612 km/s. El óptimo de Hohmann es de 1.656 km/s, por lo que el agente ahorra un poco de combustible a costa de una pequeña imprecisión en la órbita de llegada.",
+    "tools_llamadas": [
+      "planificar_transferencia"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "02": {
+    "categoria": "transferencia",
+    "prompt": "Sube de 200 a 800 km en la Luna.",
+    "tool_esperada": "planificar_transferencia",
+    "args_esperados": {
+      "planeta": "luna",
+      "h1_km": 200,
+      "h2_km": 800
+    },
+    "final": "Para subir de 200 km a 800 km en la Luna, el Delta-v del agente es de 0.203 km/s y el óptimo de Hohmann es de 0.1998 km/s. El agente tiene un exceso de 1.58% sobre el óptimo de Hohmann, lo que significa que utiliza un poco más de combustible que el mínimo teórico. Sin embargo, el error de llegada es del 0.46%, lo que indica que el agente llega muy cerca de la órbita deseada.",
+    "tools_llamadas": [
+      "planificar_transferencia"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "03": {
+    "categoria": "cambio_plano",
+    "prompt": "Sube de 400 a 35786 km en la Tierra cambiando la inclinacion 28 grados.",
+    "tool_esperada": "planificar_cambio_plano",
+    "args_esperados": {
+      "planeta": "tierra",
+      "inclinacion_grados": 28
+    },
+    "final": "Para subir de 400 km a 35786 km en la Tierra cambiando la inclinación 28 grados, el Δv del agente es de 4.23 km/s y el Δv óptimo es de 4.19 km/s. El exceso sobre el óptimo es del 1.07%. El giro en el perigeo es de 2.2 grados y en el apogeo es de 25.8 grados. El error de inclinación es de 0.16 grados. El cambio de plano se concentra en el apogeo, donde es más barato.",
+    "tools_llamadas": [
+      "planificar_cambio_plano"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "04": {
+    "categoria": "cambio_plano",
+    "prompt": "Inyecta a una orbita de 35786 km desde una de 300 km inclinada 20 grados en la Tierra.",
+    "tool_esperada": "planificar_cambio_plano",
+    "args_esperados": {
+      "planeta": "tierra",
+      "inclinacion_grados": 20
+    },
+    "final": "Para inyectar a una órbita de 35786 km desde una de 300 km inclinada 20 grados en la Tierra, el Δv del agente es de 4.0892 km/s y el Δv óptimo es de 4.0683 km/s. El exceso sobre el óptimo es del 0.51%. El giro en el perigeo es de 1.7 grados y en el apogeo es de 18.3 grados. El error de inclinación es de 0.1 grados. El cambio de plano se concentra en el apogeo, donde es más barato.",
+    "tools_llamadas": [
+      "planificar_cambio_plano"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "05": {
+    "categoria": "aerofrenado",
+    "prompt": "Frena el apogeo de 6000 a 400 km en Marte aprovechando la atmosfera.",
+    "tool_esperada": "planificar_aerofrenado",
+    "args_esperados": {
+      "planeta": "marte",
+      "apo_ini_km": 6000,
+      "apo_obj_km": 400
+    },
+    "final": "El aerofrenado en Marte para reducir el apogeo de 6000 km a 400 km es factible. El perigeo de operación sería de 116.2 km, se necesitarían 135 pasadas y la duración estimada sería de 15.4 días. El aerofrenado aprovecha el rozamiento atmosférico para frenar, lo que significa que casi no se gasta combustible en este proceso.",
+    "tools_llamadas": [
+      "planificar_aerofrenado"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "06": {
+    "categoria": "aerofrenado",
+    "prompt": "Aerofrena en Venus de 8000 a 300 km.",
+    "tool_esperada": "planificar_aerofrenado",
+    "args_esperados": {
+      "planeta": "venus",
+      "apo_ini_km": 8000,
+      "apo_obj_km": 300
+    },
+    "final": "El aerofrenado en Venus desde 8000 km a 300 km se puede realizar con un perigeo de operación de 169 km, necesitando 297 pasadas y una duración estimada de 26.2 días. El aerofrenado es una técnica que utiliza el rozamiento atmosférico para frenar la nave, por lo que casi no gasta combustible.",
+    "tools_llamadas": [
+      "planificar_aerofrenado"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "07": {
+    "categoria": "aerofrenado",
+    "prompt": "Aerofrenado en Neptuno de 10000 a 1000 km.",
+    "tool_esperada": "planificar_aerofrenado",
+    "args_esperados": {
+      "planeta": "neptuno",
+      "apo_ini_km": 10000,
+      "apo_obj_km": 1000
+    },
+    "final": "El aerofrenado en Neptuno desde 10000 km a 1000 km se puede realizar con un perigeo de operación de 1001.8 km, necesitando 76 pasadas y una duración estimada de 9.8 días. El aerofrenado es una técnica que utiliza el rozamiento atmosférico para frenar la nave, por lo que casi no gasta combustible.",
+    "tools_llamadas": [
+      "planificar_aerofrenado"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "08": {
+    "categoria": "mantenimiento",
+    "prompt": "Cuanto combustible al ano necesito para mantener una orbita a 400 km en la Tierra?",
+    "tool_esperada": "planificar_mantenimiento",
+    "args_esperados": {
+      "planeta": "tierra",
+      "h_km": 400
+    },
+    "final": "Para mantener una órbita a 400 km en la Tierra, necesitas un Δv de 27.6 m/s por año. Esto se debe a que la órbita se degrada debido al rozamiento atmosférico y es necesario reponer la energía perdida para mantener la altitud deseada. La precesión nodal causada por el achatamiento (J2) es de -1827.0 grados por año, lo que significa que el plano de la órbita cambia con el tiempo. Sin embargo, este efecto no se corrige en la planificación del mantenimiento orbital.",
+    "tools_llamadas": [
+      "planificar_mantenimiento"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "09": {
+    "categoria": "mantenimiento",
+    "prompt": "Coste de station-keeping de una orbita a 300 km en Venus.",
+    "tool_esperada": "planificar_mantenimiento",
+    "args_esperados": {
+      "planeta": "venus",
+      "h_km": 300
+    },
+    "final": "El coste de station-keeping de una órbita a 300 km en Venus es de 88.1 m/s por año. La estrategia ingenua requeriría 101.3 m/s por año, por lo que el ahorro es del 13.1%. La órbita se mantiene dentro de una franja operativa de 263-436 km y el plano precesa -8.0 grados por año debido al achatamiento (J2).",
+    "tools_llamadas": [
+      "planificar_mantenimiento"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "10": {
+    "categoria": "mantenimiento",
+    "prompt": "Coste de mantener una orbita a 500 km en Saturno.",
+    "tool_esperada": "planificar_mantenimiento",
+    "args_esperados": {
+      "planeta": "saturno",
+      "h_km": 500
+    },
+    "final": "El coste de mantener una órbita a 500 km en Saturno es de 1.3 m/s por año, aunque la órbita no se puede mantener debido a que la altitud pedida queda fuera del alcance útil para Saturno. La precesión nodal J2 es de -1054722 grados por año.",
+    "tools_llamadas": [
+      "planificar_mantenimiento"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "11": {
+    "categoria": "interplanetaria",
+    "prompt": "Calcula un viaje de la Tierra a Marte saliendo el 2026-10-21.",
+    "tool_esperada": "transferencia_interplanetaria",
+    "args_esperados": {
+      "origen": "tierra",
+      "destino": "marte"
+    },
+    "final": "El viaje de la Tierra a Marte saliendo el 2026-10-21 tomaría aproximadamente 319 días, con una velocidad de salida de 3.22 km/s y una velocidad de llegada de 2.661 km/s. El Delta-v total sería de 5.881 km/s. La energía característica C3 en el punto de salida sería de 10.37 km^2/s^2. El método utilizado para calcular este viaje es el de Lambert heliocéntrico con cónicas parcheadas.",
+    "tools_llamadas": [
+      "transferencia_interplanetaria"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "12": {
+    "categoria": "interplanetaria",
+    "prompt": "Que Delta-v hace falta para ir de la Tierra a Jupiter el 2027-05-01?",
+    "tool_esperada": "transferencia_interplanetaria",
+    "args_esperados": {
+      "origen": "tierra",
+      "destino": "jupiter"
+    },
+    "final": "Para ir de la Tierra a Júpiter el 2027-05-01, se necesitaría un Delta-v de 32.462 km/s para la salida y de 11.954 km/s para la llegada, con un total de 44.416 km/s. La energía característica C3 sería de 1053.8 km²/s². El viaje duraría aproximadamente 1871.9 días, llegando a Júpiter el 2032-06-14.",
+    "tools_llamadas": [
+      "transferencia_interplanetaria"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "13": {
+    "categoria": "interplanetaria",
+    "prompt": "Viaje de Venus a Marte el 2028-01-15.",
+    "tool_esperada": "transferencia_interplanetaria",
+    "args_esperados": {
+      "origen": "venus",
+      "destino": "marte"
+    },
+    "final": "El viaje de Venus a Marte el 2028-01-15 tendría una duración de 357 días. La velocidad de salida necesaria sería de 22.442 km/s y la velocidad de llegada sería de 13.065 km/s. El total de velocidad necesaria sería de 35.507 km/s. La energía característica C3 sería de 503.65 km²/s². El método utilizado para calcular este viaje es el de Lambert heliocéntrico (cónicas parcheadas).",
+    "tools_llamadas": [
+      "transferencia_interplanetaria"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "14": {
+    "categoria": "porkchop",
+    "prompt": "Cual es la mejor ventana para ir de la Tierra a Marte alrededor de octubre de 2026?",
+    "tool_esperada": "dibujar_porkchop",
+    "args_esperados": {
+      "origen": "tierra",
+      "destino": "marte"
+    },
+    "final": "La mejor ventana para ir de la Tierra a Marte alrededor de octubre de 2026 es a principios de noviembre de 2026, con un tiempo de vuelo de 312 días y un Δv mínimo de 5.79 km/s.",
+    "tools_llamadas": [
+      "dibujar_porkchop"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "15": {
+    "categoria": "porkchop",
+    "prompt": "Dame un porkchop Tierra-Venus centrado en junio de 2026.",
+    "tool_esperada": "dibujar_porkchop",
+    "args_esperados": {
+      "origen": "tierra",
+      "destino": "venus"
+    },
+    "final": "El porkchop de un viaje de la Tierra a Venus centrado en junio de 2026 muestra que la ventana de lanzamiento óptima está alrededor del 14 de junio de 2026, con un Δv mínimo de 7.25 km/s y un tiempo de vuelo de 180 días.",
+    "tools_llamadas": [
+      "dibujar_porkchop"
+    ],
+    "numeros_sin_respaldo": [
+      "14"
+    ],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": false
+  },
+  "16": {
+    "categoria": "dibujo",
+    "prompt": "Dibujame la transferencia de 400 a 1500 km en la Tierra.",
+    "tool_esperada": "dibujar_transferencia",
+    "args_esperados": {
+      "planeta": "tierra"
+    },
+    "final": "La transferencia de 400 a 1500 km en la Tierra se ha dibujado correctamente. La figura muestra la órbita inicial a 400 km, la órbita final a 1500 km y la trayectoria de transferencia entre ambas. El tipo de maniobra es una subida, lo que significa que el vehículo espacial gana altitud y velocidad para alcanzar la órbita final.",
+    "tools_llamadas": [
+      "dibujar_transferencia"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "17": {
+    "categoria": "dibujo",
+    "prompt": "Ensename la curva del aerofrenado en Marte de 6000 a 400 km.",
+    "tool_esperada": "dibujar_aerofrenado",
+    "args_esperados": {
+      "planeta": "marte"
+    },
+    "final": "La curva del aerofrenado en Marte de 6000 a 400 km se ha generado correctamente y se puede visualizar en la figura PNG correspondiente.",
+    "tools_llamadas": [
+      "dibujar_aerofrenado"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "18": {
+    "categoria": "dibujo",
+    "prompt": "Muestrame como se encoge la orbita en un aerofrenado en Marte de 6000 a 400 km.",
+    "tool_esperada": "dibujar_aerofrenado_orbitas",
+    "args_esperados": {
+      "planeta": "marte"
+    },
+    "final": "La órbita se encoge en un aerofrenado en Marte de 6000 a 400 km en 135 pasadas.",
+    "tools_llamadas": [
+      "dibujar_aerofrenado_orbitas",
+      "dibujar_aerofrenado_orbitas"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "19": {
+    "categoria": "dibujo",
+    "prompt": "Representame el viaje de la Tierra a Marte el 2026-10-21.",
+    "tool_esperada": "dibujar_interplanetaria",
+    "args_esperados": {
+      "origen": "tierra",
+      "destino": "marte"
+    },
+    "final": "Aquí tienes la representación del viaje de la Tierra a Marte el 2026-10-21. La figura muestra el Sol, las órbitas de los dos planetas y la trayectoria del viaje en 3D. Puedes rotar y hacer zoom en la figura para visualizarla mejor.",
+    "tools_llamadas": [
+      "dibujar_interplanetaria_3d",
+      "dibujar_interplanetaria_3d"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": false,
+    "argumentos_validos": null,
+    "cifras_fieles": true
+  },
+  "20": {
+    "categoria": "dibujo",
+    "prompt": "Ensename en 3D e interactivo el viaje de Marte a Jupiter el 2027-01-01.",
+    "tool_esperada": "dibujar_interplanetaria_3d",
+    "args_esperados": {
+      "origen": "marte",
+      "destino": "jupiter"
+    },
+    "final": "Aquí tienes la figura interactiva en 3D del viaje de Marte a Júpiter el 2027-01-01. Puedes abrir el archivo HTML en tu navegador para visualizarla y rotarla.",
+    "tools_llamadas": [
+      "dibujar_interplanetaria_3d"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "21": {
+    "categoria": "dibujo",
+    "prompt": "Dibuja en 3D un cambio de plano de 400 a 35786 km con 28 grados en la Tierra.",
+    "tool_esperada": "dibujar_cambio_plano_3d",
+    "args_esperados": {
+      "planeta": "tierra"
+    },
+    "final": "La figura generada es un archivo HTML interactivo que se abre en el navegador y se puede rotar y hacer zoom. La figura muestra la transferencia con cambio de plano desde una órbita circular a 400 km hasta una órbita circular a 35786 km con un cambio de plano de 28 grados en la Tierra.",
+    "tools_llamadas": [
+      "dibujar_cambio_plano_3d"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  },
+  "22": {
+    "categoria": "dibujo",
+    "prompt": "Dibuja el mantenimiento de una orbita a 300 km en Venus.",
+    "tool_esperada": "dibujar_mantenimiento",
+    "args_esperados": {
+      "planeta": "venus"
+    },
+    "final": "La figura muestra el mantenimiento orbital de una órbita a 300 km en Venus. La altitud se mantiene estable en 300 km durante un año, con un ciclo de caer y re-boostear. La estrategia ingenua (diente de sierra) y la banda de tolerancia también se muestran en la figura.",
+    "tools_llamadas": [
+      "dibujar_mantenimiento"
+    ],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": true,
+    "cifras_fieles": true
+  }
+}
