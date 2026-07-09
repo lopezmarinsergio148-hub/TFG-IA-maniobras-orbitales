@@ -394,5 +394,17 @@
     "herramienta_correcta": true,
     "argumentos_validos": true,
     "cifras_fieles": true
+  },
+  "23": {
+    "categoria": "fuera_dominio",
+    "prompt": "Cual es la capital de Francia?",
+    "tool_esperada": null,
+    "args_esperados": null,
+    "final": "Lo siento, pero como asistente especializado en planificación de maniobras orbitales y astrodinámica, no puedo proporcionar información sobre la capital de Francia. Mi expertise se limita a cuestiones relacionadas con el espacio y la astrodinámica. Si tienes alguna pregunta sobre transferencias orbitales, aerofrenado, mantenimiento orbital o viajes interplanetarios, estaré encantado de ayudarte.",
+    "tools_llamadas": [],
+    "numeros_sin_respaldo": [],
+    "herramienta_correcta": true,
+    "argumentos_validos": null,
+    "cifras_fieles": null
   }
 }

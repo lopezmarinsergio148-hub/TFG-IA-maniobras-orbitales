@@ -31,21 +31,15 @@ orquesta el conjunto en una conversación.
 ## Estructura del repositorio
 
 ```
-├── ia/                        Agentes de RL (env_/train_/evaluar_/modelo_) + capa LLM (llm_)
-├── scripts_importantes/       Código de física optimizado (atmósferas y propagador)
-├── datos_validacion/          Datos in-situ de misiones (Galileo, Cassini, Voyager) + validación
-├── investigacion_atmosferas/  Fuentes científicas por cuerpo (un .md por planeta)
-├── memoria/                   Memoria del TFG en LaTeX + scripts que generan sus figuras
-├── documentacion/             Explicaciones de los scripts y guía de estudio para la defensa
-├── documentos_tutores/        Material para las reuniones con los tutores
-├── imagenes/                  Figuras del proyecto (validaciones y figuras de la memoria)
-├── tests/                     Suite de verificación del propagador (54 comprobaciones)
-├── sandbox/                   Scripts de práctica/pruebas sueltas (no forman parte del sistema)
+├── ia/                   Agentes de RL (env_/train_/evaluar_/modelo_) + capa LLM (llm_)
+├── scripts_importantes/  Código de física optimizado (atmósferas y propagador)
+├── datos_validacion/     Datos in-situ de misiones (Galileo, Cassini, Voyager) + validación
+├── figuras/              Scripts que generan las figuras del proyecto (matplotlib)
+├── imagenes/             Figuras generadas (validaciones y resultados)
+├── tests/                Suite de verificación del propagador (54 comprobaciones)
 │
-├── Densidades_atmosferica.py  Scripts originales (referencia histórica; ver versión
-├── Pruebas_perturbaciones.py    "optimizada" de cada uno en scripts_importantes/)
-├── Orbitas_en_planetas.py
-└── Orbitas_entre_planetas.py
+├── Orbitas_en_planetas.py     Maniobras de impulsos y visualizaciones (referencia)
+└── Orbitas_entre_planetas.py  Hohmann, Lambert y porkchops interplanetarios
 ```
 
 ---
@@ -96,4 +90,4 @@ python tests/test_propagador.py
 
 El modelo atmosférico se ha contrastado con datos in-situ de misiones reales y la regresión nodal
 del propagador se ha verificado frente a la teoría de Brouwer. El detalle está en
-`datos_validacion/` y en el capítulo de resultados de la memoria (`memoria/`).
+`datos_validacion/`.

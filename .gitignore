@@ -4,6 +4,16 @@ Clave API*
 *.env
 .env
 
+# ── Material de trabajo, NO público (se conserva solo en local) ──
+memoria/
+documentacion/
+investigacion_atmosferas/
+Conversaciones_claude/
+documentos_tutores/
+sandbox/
+Densidades_atmosferica.py
+Pruebas_perturbaciones.py
+
 # ── Entorno virtual (1,25 GB, NO se sube; se recrea con requirements) ──
 .venv/
 venv/
