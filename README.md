@@ -46,7 +46,7 @@ orquesta el conjunto en una conversación.
 
 ## Instalación
 
-Requiere Python 3.11. Se recomienda un entorno virtual:
+Requiere Python 3.10. Se recomienda un entorno virtual:
 
 ```bash
 python -m venv .venv
