@@ -1,0 +1,51 @@
+\chapter*{Glosario}
+\label{ch:Glosario}
+
+\subsection*{Elementos y geometría orbital}
+\begin{description}
+  \item[Órbita] Trayectoria que sigue un cuerpo bajo la atracción gravitatoria de otro; en el problema de dos cuerpos es una cónica (elipse para órbitas ligadas).
+  \item[Mecánica kepleriana] Descripción idealizada del movimiento orbital en la que solo actúa la atracción de un cuerpo central puntual, sin perturbaciones; produce las órbitas cónicas perfectas de las leyes de Kepler.
+  \item[Apoapsis / Periapsis] Puntos más alejado y más cercano de la órbita al cuerpo central (apogeo/perigeo en la Tierra; apojove/perijove en Júpiter, etc.).
+  \item[Órbita heliosíncrona] Órbita cuya regresión nodal por $J_2$ iguala el ritmo de traslación del planeta alrededor del Sol, de modo que el plano orbital mantiene una orientación aproximadamente fija respecto al Sol.
+  \item[Elementos osculadores] Elementos orbitales instantáneos (la elipse kepleriana que ajusta a la posición y velocidad en ese momento); oscilan bajo perturbaciones.
+\end{description}
+
+\subsection*{Perturbaciones y dinámica}
+\begin{description}
+  \item[Perturbación] Cualquier fuerza, además de la gravedad central, que altera la órbita ideal kepleriana (achatamiento, arrastre, tercer cuerpo, etc.).
+  \item[Efecto secular] Cambio acumulativo y monotónico en el tiempo, que no se recupera (p.\,ej. el decaimiento por arrastre).
+  \item[Efecto periódico] Oscilación reversible que se promedia a cero en cada revolución (p.\,ej. el efecto de $J_2$ sobre la altitud instantánea).
+  \item[Regresión nodal] Deriva secular del RAAN ($\Omega$): giro lento del plano orbital causado por $J_2$.
+  \item[Precesión del perigeo] Giro secular del argumento del perigeo ($\omega$) por $J_2$.
+  \item[Decaimiento secular] Pérdida progresiva y acumulativa de altitud (energía) causada por el arrastre atmosférico.
+  \item[Arrastre (\emph{drag})] Fuerza de fricción con la atmósfera que frena al satélite y reduce su energía orbital.
+  \item[Reentrada] Descenso del satélite a capas atmosféricas densas donde se destruye.
+  \item[Propagador de Cowell] Método que obtiene la trayectoria integrando numéricamente la ecuación del movimiento con todas las perturbaciones sumadas.
+\end{description}
+
+\subsection*{Atmósfera y validación}
+\begin{description}
+  \item[Equilibrio hidrostático] Balance entre el gradiente de presión y el peso de la columna de gas; base del perfil de densidad.
+  \item[Nivel de 1 bar] Convención de altitud cero ($h=0$) en planetas sin superficie sólida (gigantes gaseosos).
+  \item[Termosfera / Exosfera] Capas altas de la atmósfera; la exosfera es la más externa, de flujo prácticamente libre.
+  \item[Exobase] Altura donde el recorrido libre medio iguala la altura de escala; frontera práctica de la atmósfera.
+  \item[Reconstrucción hidrostática] Estimación del perfil de densidad integrando el equilibrio hidrostático a partir de datos de temperatura y presión; empleada aquí para validar Urano y Neptuno a falta de datos in-situ.
+\end{description}
+
+\subsection*{Maniobras e inteligencia artificial}
+\begin{description}
+    \item[Maniobra impulsiva (impulso)] Encendido del motor tan breve frente al periodo orbital que se modela como un cambio instantáneo de velocidad ($\Delta v$) en un punto de la órbita.
+  \item[Transferencia de Hohmann] Maniobra de dos impulsos entre dos órbitas circulares coplanarias; la de menor $\Delta v$ para ese cambio de radio.
+  \item[Cambio de plano] Maniobra que modifica la orientación del plano orbital (la inclinación); su coste crece con la velocidad, por lo que es más barata donde la nave va más lenta (en el apogeo).
+  \item[Aerofrenado (\emph{aerobraking})] Reducción del apogeo de una órbita aprovechando el rozamiento atmosférico en sucesivos pasos por el perigeo, con un gasto de combustible mínimo.
+  \item[Mantenimiento orbital (\emph{station-keeping})] Correcciones periódicas que conservan una órbita operativa frente a las perturbaciones (sobre todo el arrastre), con el mínimo combustible.
+  \item[Problema de Lambert] Determinar la órbita que une dos posiciones en un tiempo de vuelo dado; base del diseño de transferencias interplanetarias.
+  \item[Cónicas parcheadas] Aproximación que descompone una trayectoria interplanetaria en tramos keplerianos, cada uno dominado por la gravedad de un cuerpo dentro de su esfera de influencia.
+  \item[Diagrama \emph{porkchop}] Mapa de coste ($\Delta v$ o $C_3$) en función de las fechas de salida y llegada de una transferencia interplanetaria.
+  \item[Aprendizaje por refuerzo] Técnica de IA en la que un agente aprende, por ensayo y error, la política que maximiza una recompensa acumulada.
+  \item[Función de recompensa] Señal numérica que define el objetivo del agente de aprendizaje por refuerzo; su diseño determina el comportamiento aprendido.
+    \item[Episodio] En aprendizaje por refuerzo, cada intento completo de la tarea, desde la situación inicial hasta que termina (por éxito, fallo o agotarse el tiempo); el agente aprende repitiendo miles de episodios.
+  \item[Factor de descuento ($\gamma$)] Parámetro entre 0 y 1 que regula cuánto valora el agente las recompensas futuras frente a las inmediatas: cuanto más lejano es un premio, más se reduce su peso, de modo que un valor cercano a 1 hace que el agente tenga en cuenta los objetivos lejanos.
+  \item[Adimensionalización] Reformulación de un problema en variables sin unidades (razones y magnitudes de referencia) que hace la solución invariante de escala, válida para cualquier órbita o cuerpo.
+  \item[Uso de herramientas (\emph{tool use})] Patrón por el que un modelo de lenguaje invoca funciones externas para calcular o actuar, en lugar de generar él mismo la respuesta; base de la capa de orquestación.
+\end{description}

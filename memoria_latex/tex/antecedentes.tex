@@ -1,0 +1,108 @@
+\chapter{Motivación y antecedentes}
+\label{ch:antecedentes}
+
+Este capítulo motiva el trabajo y sitúa sus aportaciones dentro del estado del arte. Se parte del problema y de su relevancia actual y, a continuación, se revisan de forma sistemática las opciones hoy disponibles para abordarlo: las herramientas de simulación astrodinámica, los métodos clásicos de planificación de maniobras, los métodos de inteligencia artificial ---en particular el aprendizaje por refuerzo y su aplicación al control aeroespacial--- y el uso de modelos de lenguaje como orquestadores. El capítulo concluye resumiendo ese panorama y señalando las lagunas que ninguna de las soluciones existentes cubre por completo, y que justifican el enfoque propuesto en este trabajo.
+
+\section{El problema y su importancia}
+
+La actividad espacial vive una expansión sin precedentes: el número de objetos en órbita crece de forma acelerada con el despliegue de grandes constelaciones de satélites, lo que ha convertido la planificación eficiente de maniobras orbitales en una necesidad operativa de primer orden. Cada maniobra consume propelente, un recurso finito que determina la vida útil de un satélite; reducir el coste en velocidad ($\Delta v$) de una transferencia, un cambio de plano o una desorbitación se traduce directamente en menor masa de combustible, mayor vida operativa o mayor capacidad de carga útil.
+
+La dificultad del problema es doble. Por un lado, las maniobras reales no ocurren en el vacío idealizado de la mecánica kepleriana: las perturbaciones ---el achatamiento planetario ($J_2$) y el arrastre atmosférico--- desvían las trayectorias y, en algunos casos, son la herramienta misma de la maniobra, como en el aerofrenado, que aprovecha el rozamiento atmosférico para frenar gastando muy poco combustible. Estas maniobras carecen, en general, de una solución analítica cerrada. Por otro lado, las herramientas profesionales capaces de modelarlas tienen una curva de aprendizaje elevada y están pensadas para especialistas, lo que las hace poco accesibles a estudiantes, aficionados o usuarios no expertos.
+
+De ahí la doble motivación de este trabajo: (i) emplear técnicas de aprendizaje automático para resolver maniobras que no admiten una fórmula directa, apoyándose en un modelo físico fiable, y (ii) {acercar la planificación de trayectorias a usuarios no especializados mediante una interacción en lenguaje natural. Las secciones siguientes revisan de forma sistemática las opciones hoy disponibles para abordar cada una de estas vertientes y señalan por qué ninguna, por sí sola, cubre el problema completo.
+
+\section{Herramientas de simulación astrodinámica}
+\label{sec:mot-software}
+
+Existen herramientas maduras para la simulación y el análisis de misiones. Las más extendidas son:
+
+\begin{itemize}
+  \item \textbf{\gls{STK}} (\textit{Systems Tool Kit}, de AGI/Ansys)~\cite{stk}: un entorno comercial, estándar de facto en la industria, con gran capacidad de modelado y visualización. Su carácter propietario y su coste limitan su uso académico y por parte de usuarios no profesionales.
+  \item \textbf{\gls{GMAT}} (\textit{General Mission Analysis Tool}, de la NASA)~\cite{gmat}: una herramienta de código abierto, muy potente para el análisis de misiones reales. Su amplitud conlleva una curva de aprendizaje pronunciada, orientada al analista profesional.
+  \item \textbf{Orekit}~\cite{orekit}: biblioteca de código abierto en Java, muy completa en dinámica de vuelo y propagación de alta precisión. Su uso exige soltura en programación y conocimientos avanzados, lo que la aleja del usuario no especializado.
+  \item \textbf{Poliastro}~\cite{poliastro}: biblioteca de astrodinámica en Python, de código abierto y con vocación pedagógica, que se describe en detalle más abajo por ser la herramienta elegida en este trabajo.
+\end{itemize}
+
+El rasgo común de todas ellas es que son herramientas de simulación y análisis: modelan la física con fidelidad, pero no incorporan aprendizaje automático para descubrir maniobras allí donde no hay fórmula, ni ofrecen una interfaz en lenguaje natural que permita a un usuario no experto plantear un objetivo y obtener una maniobra explicada. Resuelven el ``cómo simular'', pero no el ``cómo decidir'' de forma autónoma ni el ``cómo hacerlo accesible''.
+
+\subsection{Poliastro: la herramienta elegida}
+\label{sec:mot-poliastro}
+
+La biblioteca poliastro~\cite{poliastro} es una herramienta de código abierto orientada a la astrodinámica y la mecánica orbital. Su creador es Juan Luis Cano Rodríguez, ingeniero aeronáutico formado en la Universidad Politécnica de Madrid, que ha desempeñado además un papel relevante en la comunidad de software libre en España como socio fundador y presidente de Python España.
+
+Creada inicialmente como un proyecto personal, poliastro fue ganando reconocimiento en la comunidad científica y de desarrollo hasta contar con el respaldo de NumFOCUS~\cite{numfocus}, la organización que apoya proyectos de software libre de referencia en ciencia de datos ---entre ellos NumPy o Jupyter---. Según la documentación del propio proyecto, ha contado además con apoyo institucional ---incluida la \gls{ESA}--- y con contribuciones desarrolladas en programas de código abierto, en cuyo marco se ampliaron sus capacidades para el cálculo de eventos de satélite (eclipses, ventanas de visibilidad con estaciones terrestres o líneas de visión).\footnote{Información del proyecto: \url{https://www.poliastro.space} (Último acceso: 9 de julio de 2026).}
+
+Por último, poliastro se inscribe en el mismo ámbito que herramientas consolidadas y de código abierto como \gls{GMAT} (\gls{NASA}) y Orekit~\cite{gmat,orekit}, con las que comparte el enfoque abierto y la implementación de los algoritmos estándar de la astrodinámica; sus resultados están documentados en una publicación revisada por pares~\cite{poliastro}, lo que respalda su validez para la simulación y el análisis en contextos académicos y técnicos; de hecho, se emplea en investigación reciente, como la optimización de transferencias orbitales mediante algoritmos genéticos~\cite{geneticpoliastro2025}. Esta combinación de rigor, accesibilidad (Python) y carácter abierto es la razón por la que se ha adoptado como base física de este trabajo. Su limitación, a los efectos de este proyecto, es la propia de las herramientas de la sección anterior: ofrece la física, pero no la capa de decisión automática ni la de interacción en lenguaje natural.
+
+\section{Métodos de planificación y optimización de maniobras}
+\label{sec:mot-metodos}
+
+En el plano de los métodos, la astrodinámica dispone de soluciones clásicas bien establecidas para las maniobras con óptimo conocido: la transferencia de Hohmann~\cite{curtis2020,vallado2013} para el cambio entre órbitas circulares coplanarias, su combinación con el cambio de plano, o el problema de Lambert para transferencias con tiempo de vuelo fijo. Para trayectorias más complejas ---en particular las de bajo empuje\footnote{Propulsión de bajo empuje: motores (típicamente eléctricos) que aplican una fuerza pequeña de forma continua durante días o meses, en lugar del impulso breve e intenso de un motor químico; la maniobra se convierte en una espiral de muchas vueltas.}--- se recurre a técnicas de control óptimo\footnote{El control óptimo busca la ley de guiado que minimiza un coste (por ejemplo, el combustible). Los métodos directos convierten el problema en una optimización numérica; los indirectos lo resuelven con las condiciones matemáticas de optimalidad; los pseudoespectrales son una variante directa que aproxima la trayectoria con polinomios.} (métodos directos, indirectos o pseudoespectrales).
+
+Estos métodos son insuperables donde aplican: cuando el problema admite una formulación analítica o de optimización bien planteada, conviene usarlos y no reemplazarlos. Su límite aparece cuando la física se vuelve incierta o sin solución cerrada: el aerofrenado a través de una atmósfera cuya densidad solo se conoce de forma aproximada, o el control en lazo cerrado frente a perturbaciones, no encajan en una fórmula. Es precisamente ese hueco el que motiva el uso del aprendizaje por refuerzo.
+
+\section{Métodos de inteligencia artificial}
+\label{sec:mot-ia}
+
+Cuando un problema no admite una solución analítica cerrada, o cuando su modelo es incierto, cabe abordarlo con técnicas de \gls{IA} y, en particular, de aprendizaje automático (\textit{machine learning}): en lugar de programar la solución paso a paso, se deja que el sistema la aprenda a partir de datos o de la experiencia. Dentro del aprendizaje automático suelen distinguirse tres grandes paradigmas, según la información de la que aprende el sistema.
+
+\begin{itemize}
+  \item El aprendizaje supervisado (\textit{supervised learning}) parte de ejemplos etiquetados, en los que a cada entrada se asocia la salida correcta; es el enfoque de tareas como la clasificación o la regresión, y exige disponer de un conjunto de datos con la respuesta ya conocida.
+  \item El aprendizaje no supervisado (\textit{unsupervised learning}) trabaja con datos sin etiquetar y busca descubrir en ellos una estructura oculta ---agrupaciones o patrones---, sin una respuesta de referencia.
+  \item El aprendizaje por refuerzo (\gls{RL}) no aprende de ejemplos, sino de la interacción: un agente prueba acciones, observa sus consecuencias y ajusta su comportamiento para maximizar una señal de recompensa.
+\end{itemize}
+
+La diferencia esencial está en el origen del conocimiento: el  aprendizaje supervisado necesita la respuesta correcta de antemano, el no supervisado busca estructura en los datos y el refuerzo aprende de la consecuencia de sus propias decisiones, lo que lo hace idóneo para los problemas de control y de decisión secuencial.
+
+En el aprendizaje por refuerzo, el aprendizaje se organiza en torno a la interacción entre un agente y un entorno~\cite{suttonbarto2018}. En cada instante, el agente observa el estado del entorno, elige una acción y recibe a cambio una recompensa ---una señal numérica que indica cómo de buena ha sido--- junto con el nuevo estado. Repitiendo este ciclo, el agente refina su política ---la regla que asocia estados con acciones--- de modo que maximice la recompensa acumulada a lo largo del tiempo.
+
+Un ejemplo cotidiano ayuda a fijar estos conceptos. Pensemos en un videojuego clásico como \textit{Pac-Man}: el agente es el personaje que se controla; el estado es la configuración del laberinto en cada instante ---la posición del personaje, la de los fantasmas y los puntos que quedan por comer---; las acciones son los cuatro movimientos posibles (arriba, abajo, izquierda y derecha); la recompensa es positiva al comer puntos y negativa al ser atrapado por un fantasma; y la política es la estrategia que, dado un estado, decide hacia dónde moverse. Fue precisamente aprendiendo a jugar a videojuegos de este estilo cómo el aprendizaje por refuerzo profundo alcanzó gran notoriedad~\cite{mnih2015}.
+
+A diferencia del aprendizaje supervisado, al modelo no se le indica cuál es la acción correcta: es el agente el que debe descubrirla por ensayo y error, equilibrando la exploración de acciones nuevas con el aprovechamiento de las que ya conoce. Este marco resulta especialmente adecuado cuando el problema consiste en tomar una secuencia de decisiones cuyo acierto solo puede juzgarse por su resultado, y no en reproducir respuestas conocidas de antemano.
+
+Es justamente esa característica la que hace del aprendizaje por refuerzo el paradigma apropiado para las maniobras que aborda este trabajo: en el aerofrenado o en el mantenimiento de una órbita no existe una fórmula que dé la solución ---ni, por tanto, un conjunto de ejemplos etiquetados con los que entrenar de forma supervisada---, pero sí puede definirse una recompensa que premie alcanzar el objetivo con el mínimo gasto de combustible. Los apartados siguientes revisan cómo se ha aplicado el aprendizaje por refuerzo en el ámbito aeroespacial y qué papel pueden desempeñar los modelos de lenguaje.
+
+\section{Aprendizaje por refuerzo en el control aeroespacial}
+\label{sec:mot-rl}
+
+Sobre las bases descritas, el \gls{RL} ha encontrado una aplicación creciente en problemas de guiado, navegación y control aeroespacial, donde no existe una ley de control analítica evidente. Se ha aplicado, entre otros, al control de actitud\footnote{La actitud de un vehículo es su orientación en el espacio (hacia dónde apunta); su control la mantiene mediante ruedas de reacción, propulsores u otros actuadores.}, al guiado de descenso y aterrizaje, a la identificación de la dinámica orbital mediante redes neuronales~\cite{gueho2019}, a las transferencias de bajo empuje interplanetarias~\cite{zavoli2020} y, de forma especialmente relevante para este trabajo, al aerofrenado autónomo~\cite{falcone2023}, donde un agente decide las sucesivas pasadas atmosféricas evitando sobrepasar los límites térmicos de la nave.
+
+Ahora bien, estos trabajos presentan, desde la perspectiva de este proyecto, tres limitaciones recurrentes: tienden a ser específicos de un escenario o de un cuerpo concreto y generalizan poco; con frecuencia se entrenan sobre una física simplificada y no contrastada con datos reales de misión; y, en todo caso, no incorporan una capa de interacción accesible al usuario no experto. El presente trabajo se diferencia en esos tres puntos: persigue la generalización (un mismo agente para muchas órbitas y cuerpos mediante adimensionalización), se apoya en un modelo atmosférico validado contra datos de misión, y se concibe bajo una capa de orquestación en lenguaje natural.
+
+\section{Modelos de lenguaje como orquestadores}
+\label{sec:mot-llm}
+
+La irrupción de los grandes modelos de lenguaje (\gls{LLM}'s) ha abierto una vía para que sistemas complejos sean operados mediante lenguaje natural. Más allá de generar texto, los \gls{LLM}'s pueden actuar como orquestadores que, ante una petición, seleccionan y ejecutan herramientas externas y comunican el resultado ---el patrón conocido como \textit{tool use} o \textit{function calling}~\cite{yao2022react,schick2023toolformer}---.
+
+Su aplicación a la planificación de misiones espaciales es, sin embargo, todavía incipiente. Existe aquí una oportunidad clara: un \gls{LLM}  que no calcule la maniobra ---tarea que se delega en los agentes y solucionadores especializados, fiables y verificables--- sino que coordine esas herramientas y explique sus resultados en términos comprensibles, acercando la planificación de trayectorias a quien no domina la astrodinámica. Esa es la función que este trabajo asigna a la capa \gls{LLM} , con un anclaje estricto a los datos reales para evitar posibles alucinaciones del modelo.
+
+\section{Resumen del estado del arte y lagunas detectadas}
+\label{sec:mot-resumen}
+
+Del análisis anterior se desprende que cada familia de soluciones cubre una parte del problema, pero ninguna lo resuelve por completo. Las herramientas de simulación aportan la física pero no la decisión autónoma ni la accesibilidad; los métodos clásicos resuelven los óptimos conocidos pero no la física incierta; los trabajos de \gls{RL} aportan aprendizaje pero con poca generalización y sin física validada ni interfaz accesible; y los \gls{LLM} ofrecen la interacción natural pero no se han llevado a este dominio. La Tabla~\ref{tab:mot-comparativa} sintetiza esta comparación.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparación de los enfoques existentes frente a las necesidades del problema.}
+  \label{tab:mot-comparativa}
+  % El \resizebox ajusta todo proporcionalmente sin forzar saltos de línea feos
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{l c c c c c}
+    \hline\hline
+    \textbf{Enfoque} & \textbf{Abierto} & \textbf{Accesible} & \textbf{Aprende} & \textbf{Física val.} & \textbf{Interfaz} \\
+     & & \textbf{no experto} & \textbf{(\gls{RL})} & \textbf{multicuerpo} & \textbf{lenguaje natural} \\
+    \hline
+    \gls{STK} (comercial)         & No  & Parcial & No  & Sí      & No \\
+    \gls{GMAT} (\gls{NASA})       & Sí  & Medio   & No  & Sí      & No \\
+    Orekit (Java)                 & Sí  & Bajo    & No  & Sí      & No \\
+    poliastro (Python)            & Sí  & Alto    & No  & Parcial & No \\
+    Estudios de \gls{RL} orbital  & Var.& Bajo    & Sí  & Parcial & No \\
+    \hline
+    \textbf{Este trabajo}   & Sí  & Alto    & Sí  & Sí      & Sí \\
+    \hline\hline
+  \end{tabular}%
+  }
+\end{table}
+
+La laguna que este trabajo pretende cubrir queda así delimitada: no se ha identificado una solución que integre, de forma conjunta, (i) un modelo físico validado contra datos de misión y de alcance multicuerpo, (ii) agentes de aprendizaje por refuerzo que generalicen las maniobras (incluidas las que no tienen solución analítica, como el aerofrenado), y (iii) una capa de lenguaje natural que orqueste esas capacidades y las haga accesibles a usuarios no especializados. Cubrir esa intersección ---y no cada pieza por separado, que ya existe--- es
+la aportación que da sentido a este trabajo y enlaza con los objetivos del Capítulo~\ref{ch:objetivos}.

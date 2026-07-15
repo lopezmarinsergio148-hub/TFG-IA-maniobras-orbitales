@@ -1,0 +1,71 @@
+\chapter{Introducción} 
+\label{ch:introduccion}
+
+%\avisoLocalizacionArchivo 
+
+\begin{comment}
+En este capítulo debes introducir el problema sin divagar, sin copiar de otros documentos y sin utilizar un lenguaje excesivamente técnico.  Tampoco utilices un lenguaje informal.  Este capítulo debería convencer al cliente de que el proyecto merece la pena.  Es decir, es un problema real y no está resuelto completamente.
+
+Debe tenerse siempre presente que el cliente es el que paga.  En el TFG el que paga es el tribunal, en forma de calificación.  Así que a quien hay que convencer es a los miembros del tribunal.  El tribunal no lo conocerás a priori.  Por eso la memoria debe estar escrita para que la entienda alguien que no es especialista en el campo de aplicación. Pero eso no implica que se toleren la falta de rigor o la falta de argumentación técnica.  Solo implica que los argumentos específicos hay que explicarlos o citar la fuente que los explica.
+
+Redacta la introducción al final del TFG, cuando tengas elaborado el capítulo de antecedentes, los resultados y su discusión.  De esta forma podrás evitar repetir argumentos que ya están en esos capítulos.  La introducción debe introducir también el contexto en el que se desarrolla el TFG.  Divide el documento en secciones y subsecciones para organizar el contenido del capítulo.  Utiliza preferentemente frases cortas.
+
+
+\section{Organización de la memoria} 
+\label{sec:organizacion-memoria}
+
+La organización de este documento responde a un documento científico-técnico. Se descompone en los siguientes capítulos.
+
+\begin{description}
+    \item[\autoref{ch:objetivos}] Enumera y justifica los objetivos del proyecto y establece los límites intrínsecos y extrínsecos de ejecución del TFG.
+    \item[\autoref{ch:antecedentes}] Analiza los antecedentes y estado del arte en relación al tema del proyecto.
+    \item[\autoref{ch:desarrollo}] Describe todo el proceso de desarrollo del TFG.  Esto incluye la metodología de trabajo  empleada y las diferentes etapas o iteraciones que se han llevado a cabo.  No dudes en descomponer el capítulo en varios si aglutina demasiado material.
+    \item[\autoref{ch:resultados}] Describe en detalle los resultados obtenidos y las pruebas realizadas. Discute los resultados en relación a los objetivos del proyecto.
+    \item[\autoref{ch:conclusiones}] Recopila las principales conclusiones del proyecto y comenta las líneas de trabajo futuro, en caso de que se contemplen.
+    \item[\deschyperlink{ch:anexos}{Anexos}] Complementan la información del cuerpo del documento con información técnica útil para reproducir los resultados, pero innecesaria para comprender en su totalidad el TFG realizado.
+    \item[\deschyperlink{ch:bibliografia}{Bibliografía}] Recopila las referencias bibliográficas utilizadas en este documento.
+\end{description}
+
+\warning{La normativa de la EIIA no te obliga a usar una estructura fija.  Adáptala como quieras a tu TFG.  Puedes reordenar capítulos, mezclarlos, dividirlos, etc.  Por ejemplo, es frecuente poner unos antecedentes antes de los objetivos, que definen el contexto del TFG, y desarrollar el estado de la cuestión después de los objetivos.}
+
+\warning{Al finalizar el resto de los capítulos revisa esta descripción del documento para que coincida con lo que realmente contiene la memoria.  Por ejemplo, es frecuente fusionar varios capítulos en uno cuando son muy pequeños.  También es frecuente lo contrario, dividir un capítulo en varios cuando es muy extenso.}
+
+\section{Repositorio de información}
+\label{sec:repositorio}
+
+\warning{Es muy útil tanto para la ejecución como para la evaluación disponer de un repositorio para almacenar las sucesivas versiones del documento y de todo el material generado durante el proyecto.  La UCLM incorpora \href{https://github.com}{GitHub} como servicio institucional. Si no utilizas un repositorio quita esta sección.}
+
+Todo el material generado durante la ejecución de este proyecto está disponible en el repositorio \thegitrepo{}.  El material incluye el código \LaTeX{} del presente documento, el código fuente de los programas realizados o modificados, y todos los datos generados en la evaluación de resultados.
+\end{comment}
+
+La planificación de maniobras orbitales ---decidir cómo cambiar la trayectoria de una nave, o conservarla, con el mínimo gasto de combustible--- es una tarea central de la ingeniería aeroespacial. Muchas de estas maniobras se resuelven desde hace décadas con fórmulas bien conocidas; otras, en cambio, no admiten una solución analítica. Son estas últimas las que motivan el presente trabajo.
+
+Su dificultad tiene un origen físico. Las maniobras reales no siguen la mecánica ideal: el achatamiento de los planetas y el rozamiento atmosférico perturban las trayectorias. Algunas, como el aerofrenado, se apoyan precisamente en esas perturbaciones y carecen de una fórmula que las resuelva. A ello se añade que las herramientas capaces de modelarlas son complejas y están reservadas a especialistas.
+
+Este trabajo aborda las dos caras del problema. Por un lado, emplea técnicas de \gls{IA} ---en concreto, el aprendizaje por refuerzo--- para resolver las maniobras que no admiten una solución analítica, sobre un modelo físico contrastado con datos de misiones reales. Por otro, incorpora una capa de lenguaje natural, basada en un \gls{LLM}, que acerca la planificación de trayectorias a quien no domina la astrodinámica. El resultado es un sistema que decide y explica, desde el cálculo físico hasta la conversación.
+
+No se ha identificado en la revisión realizada una herramienta que reúna hoy estas tres piezas ---una física validada, un aprendizaje que generaliza y una interfaz accesible--- de forma conjunta. Cubrir ese hueco es lo que da sentido y utilidad a este trabajo.
+
+% ---------------------------------------------------------------------------
+\section{Organización de la memoria}
+\label{sec:intro-organizacion}
+
+La memoria se estructura como un documento científico-técnico. Cada capítulo aborda una fase del trabajo, del planteamiento del problema a la discusión de los resultados.
+
+\begin{itemize}
+  \item El Capítulo~\ref{ch:objetivos} enumera y justifica los objetivos del proyecto, y fija los límites de su alcance.
+  \item El Capítulo~\ref{ch:antecedentes} revisa los antecedentes y el estado del arte: el software astrodinámico existente, el uso del \gls{RL} en el ámbito aeroespacial y los orquestadores basados en \gls{LLM}. De ahí se identifica el hueco que este trabajo cubre.
+  \item El Capítulo~\ref{ch:fundamentos} presenta los fundamentos de mecánica orbital que sostienen el resto del documento: la órbita kepleriana, las perturbaciones del achatamiento y el arrastre atmosférico, y las maniobras de transferencia.
+  \item El Capítulo~\ref{ch:desarrollo} describe el desarrollo del sistema: el modelo atmosférico de los nueve cuerpos, el propagador con achatamiento y arrastre, los agentes de \gls{RL} que resuelven las maniobras sin solución analítica y la capa de lenguaje natural que los orquesta.
+  \item El Capítulo~\ref{ch:resultados} expone los resultados: la validación del modelo físico contra datos de misiones reales, la evaluación cuantitativa de los agentes y de la capa \gls{LLM}, y las contribuciones originales del trabajo.
+  \item El Capítulo~\ref{ch:conclusiones} recopila las conclusiones y las líneas de trabajo futuro.
+  \item Los anexos complementan el cuerpo del documento con información técnica para reproducir los resultados, y la bibliografía recoge las referencias empleadas.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\section{Repositorio de información}
+\label{sec:intro-repositorio}
+
+Todo el material generado durante la ejecución de este proyecto está disponible en un repositorio público de control de versiones alojado en GitHub. El repositorio reúne el código fuente de los programas desarrollados, el código \LaTeX{} del presente documento y los datos generados en la evaluación de los resultados, lo que permite reproducir el trabajo y seguir su evolución.
+
+El repositorio se encuentra disponible en el siguiente enlace: \url{https://github.com/lopezmarinsergio148-hub/TFG-IA-maniobras-orbitales}.
