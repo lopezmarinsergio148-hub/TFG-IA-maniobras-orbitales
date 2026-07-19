@@ -13,6 +13,22 @@
 #  accion + 2 de estado piden algo mas de capacidad (decision defendible, no capricho).
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ TRAIN_TRANSFER3D — Entrenamiento del PPO en 3D (Hohmann + cambio de plano)
+
+ Extiende la transferencia adimensional al caso 3D: ademas del salto de radio R,
+ la maniobra reparte un cambio de inclinacion di entre los dos impulsos (accion
+ 4D). Curriculum en DOS ejes a la vez (R y di), ampliando ambos rangos por etapas
+ sobre el mismo modelo (set_env); red algo mayor ([128,128]) por los grados de
+ libertad extra. Salida: ia/modelo_transfer3d/best_model.zip.
+
+ ÍNDICE DE FUNCIONES:
+   - _env(r_span, di_max_deg) : construye un entorno 3D monitorizado con los topes dados.
+   - main()                   : recorre el curriculum 2D, entrena el PPO y guarda el mejor modelo.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 
 import numpy as np
@@ -37,11 +53,17 @@ ETAPAS = [
 
 
 def _env(r_span, di_max_deg):
+    """Devuelve un Transfer3DEnv (aleatorio, monitorizado) con los topes de R y di dados."""
     return Monitor(Transfer3DEnv(aleatorio=True, r_span=r_span,
                                  di_max=np.radians(di_max_deg)))
 
 
 def main():
+    """Entrena el PPO 3D por el curriculum de dos ejes (R, di) y guarda el mejor modelo.
+
+    Evalua siempre en el rango pleno; en cada etapa amplia ambos topes (set_env)
+    sin reiniciar el contador de pasos entre tramos.
+    """
     eval_env = _env(R_SPAN, np.degrees(DI_MAX))          # SIEMPRE rango pleno
     eval_cb = EvalCallback(eval_env, best_model_save_path=DIR_MODELO, log_path=DIR_MODELO,
                            eval_freq=5000, n_eval_episodes=40,

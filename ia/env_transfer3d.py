@@ -30,6 +30,22 @@
 #  Episodio de UN paso (bandit contextual), como el resto de agentes de Fase 1.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ ENV_TRANSFER3D — entorno Gymnasium de la Fase 1 en 3D (cambio de plano)
+ Extiende el agente coplanar a tres dimensiones: la órbita destino, además de otro
+ radio, está inclinada un ángulo di. Cada impulso es un VECTOR (parte tangencial +
+ parte fuera de plano, 4 componentes) y el agente descubre solo cómo repartir el
+ giro. Adimensional (mu=1, r1=1): el óptimo depende de (R, di). Solo subir (R>=1).
+
+ ÍNDICE DE CLASES/FUNCIONES:
+   - _map(a, lo, hi)    : reescala una acción [-1,1] al rango físico [lo, hi].
+   - _unmap(dv, lo, hi) : inversa de _map (impulso físico -> acción).
+   - Transfer3DEnv      : entorno Gym 3D de un paso; acción vectorial de 4 números.
+   - accion_optima(R,di): traduce el óptimo del juez a las 4 componentes de acción.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
@@ -101,6 +117,8 @@ class Transfer3DEnv(gym.Env):
     metadata = {"render_modes": []}
 
     def __init__(self, aleatorio=True, r_span=R_SPAN, di_max=DI_MAX):
+        """Configura el entorno 3D adimensional: modo (aleatorio o caso fijo), topes de
+        R y di del currículum y los espacios de observación (log R, di) y acción (4)."""
         super().__init__()
         # aleatorio=True -> sortea (R, di) en el rango (politica GENERAL, entrenamiento).
         # aleatorio=False -> caso fijo LEO->GEO con 28.5 grados (depurar).
@@ -115,9 +133,12 @@ class Transfer3DEnv(gym.Env):
         self.di = None
 
     def _obs(self):
+        """Observación: [log(R) normalizado, di normalizado por DI_MAX]."""
         return np.array([np.log(self.R) / LOG_RMAX, self.di / DI_MAX], dtype=np.float32)
 
     def reset(self, *, seed=None, options=None):
+        """Reinicia el episodio fijando el ratio R y el cambio de plano di (por
+        'options', aleatorios en el rango o el caso fijo LEO->GEO a 28.5 grados)."""
         super().reset(seed=seed)
         if options and "R" in options and "di" in options:
             self.R = float(options["R"])
@@ -131,6 +152,10 @@ class Transfer3DEnv(gym.Env):
         return self._obs(), {}
 
     def step(self, action):
+        """Aplica los dos impulsos vectoriales: monta la elipse de transferencia en su
+        plano inclinado, hace el coasting al apogeo, cierra la órbita final y mide el
+        error geométrico (log) y de inclinación, además del Δv gastado.
+        Devuelve (obs, recompensa, terminado, truncado, info)."""
         dv1t = float(_map(action[0], DV1T_LO, DV1T_HI))
         dv1n = float(_map(action[1], DV1N_LO, DV1N_HI))
         dv2t = float(_map(action[2], DV2T_LO, DV2T_HI))

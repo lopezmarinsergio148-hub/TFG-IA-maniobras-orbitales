@@ -6,6 +6,20 @@
 #  compara con el óptimo analítico (ia/baselines.py). Éxito: Δv ≤ 5% del óptimo.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ EVALUAR_HOHMANN — Evaluacion del agente de la Fase 1 frente al optimo de Hohmann
+
+ Carga el agente entrenado, le pide la maniobra LEO->GEO y la compara con el
+ optimo analitico (baselines.hohmann_leo_geo). Reporta el exceso de Δv sobre el
+ optimo y el error de llegada; el criterio de exito es Δv <= 5% del optimo y
+ llegar a GEO (error de radio < 2%).
+
+ ÍNDICE DE FUNCIONES:
+   - main() : ejecuta la maniobra del agente, la compara con el optimo e imprime el veredicto.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 
 from stable_baselines3 import PPO
@@ -18,6 +32,7 @@ MODELO = os.path.join(AQUI, "modelo_hohmann", "best_model")   # mejor modelo (Ev
 
 
 def main():
+    """Ejecuta la maniobra LEO->GEO del agente y la compara con el optimo de Hohmann."""
     model = PPO.load(MODELO) #Carga el cerebro (Agente) entrenado.
     env = HohmannEnv()
     r1, r2 = R_TIERRA + H_LEO, R_TIERRA + H_GEO

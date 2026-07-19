@@ -7,6 +7,20 @@
 #  inicial y objetivo) -> demuestra que generaliza dentro del planeta, no memoriza.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ EVALUAR_DRAG — Evaluacion del agente de AEROFRENADO de un planeta
+
+ Carga el especialista entrenado y lo prueba en N escenarios ALEATORIOS (distinto
+ apogeo inicial y objetivo dentro del mismo planeta), contando exitos. Demuestra
+ que el agente generaliza dentro del planeta en vez de memorizar un caso concreto.
+
+ ÍNDICE DE FUNCIONES:
+   - _resultado(info) : traduce el info del episodio a "EXITO"/"DESTRUIDO"/"TIMEOUT".
+   - main(planeta)    : corre los N escenarios y resume la tasa de exito.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 
@@ -19,6 +33,7 @@ N = 8   # nº de escenarios aleatorios a probar
 
 
 def _resultado(info):
+    """Devuelve la etiqueta de resultado del episodio a partir de su dict info."""
     if info.get("exito"):
         return "EXITO"
     if info.get("fallo"):
@@ -27,6 +42,7 @@ def _resultado(info):
 
 
 def main(planeta="marte"):
+    """Carga el agente de aerofrenado del planeta y lo evalua en N escenarios aleatorios."""
     modelo = os.path.join(AQUI, "modelo_drag", planeta, "best_model")
     model = PPO.load(modelo)
     env = AeroBrakingEnv(planeta=planeta, aleatorio=True)

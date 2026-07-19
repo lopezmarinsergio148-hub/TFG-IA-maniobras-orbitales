@@ -12,6 +12,22 @@
 #    3) ia_keep_coste_altitud   — Dv/ano de mantenimiento vs altitud (los 7 cuerpos)
 #    4) ia_keep_ahorro          — ahorro del agente frente a la ingenua, por cuerpo
 # ═══════════════════════════════════════════════════════════════════════════
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ FIGURAS DEL AGENTE 5 (MANTENIMIENTO ORBITAL) — gráficas para la memoria
+ Corre los agentes PPO reales (modelo_keep/<planeta>/best_model) sobre env_keep
+ (física secular drag + J2, atmósferas validadas) y vuelca las figuras a imagenes/ia/.
+
+ ÍNDICE DE FUNCIONES:
+   - guardar(fig, nombre)              : guarda la figura como PDF vectorial y PNG.
+   - _ingenua(env, obs)               : política baseline (re-boost a tope al caer media banda).
+   - _serie_altitud(planeta, politica): corre un episodio y devuelve la altitud por día y el Δv total.
+   - fig_diente_sierra()              : altitud vs tiempo en la Tierra (ISS), agente vs ingenua.
+   - fig_franjas()                    : franja operativa de mantenimiento de cada cuerpo.
+   - fig_coste_altitud()              : Δv/año de mantenimiento frente a la altitud (7 cuerpos).
+   - fig_ahorro(n)                    : ahorro de Δv del agente frente a la ingenua, por cuerpo.
+═══════════════════════════════════════════════════════════════════════════════
+"""
 
 import os
 
@@ -41,12 +57,15 @@ LEG = dict(facecolor="#15152a", edgecolor="#555", labelcolor="#eee", framealpha=
 
 
 def guardar(fig, nombre):
+    """Guarda la figura en imagenes/ia/ como PDF vectorial y PNG (200 dpi), fondo oscuro."""
     fig.savefig(os.path.join(IMG, nombre + ".pdf"), bbox_inches="tight", facecolor=FONDO)
     fig.savefig(os.path.join(IMG, nombre + ".png"), dpi=200, bbox_inches="tight", facecolor=FONDO)
     print("  guardada:", nombre)
 
 
 def _ingenua(env, obs):
+    """Política ingenua de baseline: re-boostea a tope (+1) al caer por debajo de media banda,
+    y no hace nada (-1) en caso contrario. Sirve para comparar contra el agente RL."""
     desv_km = (env.a - env.a_obj) / 1000.0
     return np.array([1.0 if desv_km < -BANDA_KM * 0.5 else -1.0], dtype=np.float32)
 
@@ -66,6 +85,8 @@ def _serie_altitud(planeta, politica):
 
 # ── 1) Diente de sierra: altitud vs tiempo (ISS) ────────────────────────────
 def fig_diente_sierra():
+    """Figura ia_keep_diente_sierra: altitud vs tiempo en la Tierra (ISS), mostrando el
+    diente de sierra de la estrategia ingenua frente al agente RL, que se mantiene estable."""
     m = PPO.load(os.path.join(AQUI, "modelo_keep", "tierra", "best_model"))
     h_ag, dv_ag, env = _serie_altitud("tierra", lambda e, o: m.predict(o, deterministic=True)[0])
     h_in, dv_in, _ = _serie_altitud("tierra", _ingenua)
@@ -91,6 +112,8 @@ def fig_diente_sierra():
 
 # ── 2) Franja operativa derivada de cada cuerpo ─────────────────────────────
 def fig_franjas():
+    """Figura ia_keep_franjas: barras horizontales (escala log) con la franja de altitudes
+    operativas de mantenimiento derivada de la atmósfera de cada cuerpo."""
     fig, ax = plt.subplots(figsize=(8.5, 5))
     for k, p in enumerate(CUERPOS):
         env = KeepEnv(planeta=p, aleatorio=False)
@@ -113,6 +136,8 @@ def fig_franjas():
 
 # ── 3) Coste de mantenimiento Dv/año vs altitud (los 7 cuerpos) ─────────────
 def fig_coste_altitud():
+    """Figura ia_keep_coste_altitud: Δv/año de mantenimiento frente a la altitud (ejes log-log)
+    para los 7 cuerpos; el coste cae al subir la altitud por la densidad exponencial."""
     fig, ax = plt.subplots(figsize=(8.5, 5.4))
     for p in CUERPOS:
         env = KeepEnv(planeta=p, aleatorio=False)
@@ -134,6 +159,9 @@ def fig_coste_altitud():
 
 # ── 4) Ahorro del agente frente a la ingenua, por cuerpo ────────────────────
 def fig_ahorro(n=20):
+    """Figura ia_keep_ahorro: barras con el ahorro de Δv (%) del agente frente a la ingenua,
+    promediado sobre n episodios aleatorios por cuerpo. Mucho ahorro donde el control fino
+    importa (Marte) y casi nada donde la física ya fija el Δv (gigantes)."""
     ahorros = []
     for p in CUERPOS:
         m = PPO.load(os.path.join(AQUI, "modelo_keep", p, "best_model"))

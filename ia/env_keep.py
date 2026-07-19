@@ -32,6 +32,21 @@
 #  mismo agente transfiera entre planetas. Unidades internas: SI (m, m/s, s).
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ ENV_KEEP — entorno Gymnasium de mantenimiento orbital (station-keeping)
+ Lo contrario del aerofrenado: el satélite defiende su órbita operativa contra el
+ drag durante una misión de duración fija, re-boosteando lo justo para no salirse de
+ la banda de tolerancia y gastando el mínimo Δv. El J2 se modela y se trackea (giro
+ del plano) pero no se corrige. Estado adimensional para transferir entre cuerpos.
+
+ ÍNDICE DE CLASES/FUNCIONES:
+   - _dv_anual_mantenimiento(planeta, h): Δv/año para mantener una órbita circular.
+   - _altura_para_dv(planeta, dv)       : altura cuyo Δv anual iguala un objetivo.
+   - KeepEnv                            : entorno Gym; 1 paso = DT días de misión.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 
@@ -121,6 +136,9 @@ class KeepEnv(gym.Env):
     metadata = {"render_modes": []}
 
     def __init__(self, planeta="tierra", aleatorio=False):
+        """Configura el entorno para un planeta: escalas de normalización, franja de
+        altitudes operativas (derivada de su atmósfera), duración de la misión y los
+        espacios de observación (5 números) y acción (magnitud de re-boost)."""
         super().__init__()
         if planeta not in PLANETAS or not PLANETAS[planeta].tiene_atmosfera:
             raise ValueError(f"'{planeta}' no es un planeta con atmosfera valido")
@@ -166,6 +184,7 @@ class KeepEnv(gym.Env):
         return a - self.R
 
     def _v_circ(self, a):
+        """Velocidad circular para un semieje a [m/s]."""
         return np.sqrt(self.MU / a)
 
     def _da_dt(self, a):
@@ -185,6 +204,9 @@ class KeepEnv(gym.Env):
 
     # ── API gym ──────────────────────────────────────────────────────────────
     def _obs(self):
+        """Observación (5 números): desviación de semieje en unidades de banda,
+        excentricidad, desviación de inclinación, avance temporal y densidad sentida
+        (log-normalizada, la pista que permite transferir entre cuerpos)."""
         rho, _ = self.planeta.get_rho(self._h(self.a), 0)
         # rho normalizada en log para que cubra ordenes de magnitud entre cuerpos
         rho_norm = np.log10(max(rho, 1e-30)) / 12.0
@@ -197,6 +219,9 @@ class KeepEnv(gym.Env):
         ], dtype=np.float32)
 
     def reset(self, *, seed=None, options=None):
+        """Reinicia la misión: fija la órbita objetivo (altitud e inclinación, por
+        'options', aleatoria o caso ISS), calcula el tope de re-boost por paso y
+        arranca clavado en el objetivo con contadores a cero."""
         super().reset(seed=seed)
         if options and "h_obj_km" in options:
             self.a_obj = self.R + float(options["h_obj_km"]) * 1000.0
@@ -221,6 +246,10 @@ class KeepEnv(gym.Env):
         return self._obs(), {}
 
     def step(self, action):
+        """Un intervalo DT de misión: aplica el re-boost del agente, propaga el decay
+        por drag (con sub-pasos), trackea el J2, mide la desviación y da la recompensa
+        (bonus por seguir en banda, castigo por Δv y por salirse/reentrar).
+        Devuelve (obs, recompensa, terminado, truncado, info)."""
         self.paso += 1
 
         # 1) Re-boost que decide el agente (impulso tangencial, sube el semieje).

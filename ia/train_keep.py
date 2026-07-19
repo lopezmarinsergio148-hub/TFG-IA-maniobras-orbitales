@@ -7,6 +7,21 @@
 #  Guarda el mejor modelo en  ia/modelo_keep/<planeta>/best_model.zip
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ TRAIN_KEEP — Entrenamiento del agente de MANTENIMIENTO ORBITAL (station-keeping)
+
+ Entrena por PPO un especialista de mantenimiento de orbita POR PLANETA: aprende
+ a contrarrestar la caida por rozamiento con impulsos de re-boost, conservando el
+ semieje dentro de una banda durante toda la mision (365 pasos). Con `aleatorio`
+ generaliza a orbitas de partida distintas. Guarda el mejor modelo en
+ ia/modelo_keep/<planeta>/best_model.zip.
+
+ ÍNDICE DE FUNCIONES:
+   - main(planeta, timesteps, aleatorio) : monta el entorno, entrena el PPO y guarda el mejor modelo.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 
@@ -20,6 +35,11 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 
 
 def main(planeta="tierra", timesteps=400_000, aleatorio=False):
+    """Entrena el agente de station-keeping del planeta dado y guarda el mejor modelo.
+
+    `aleatorio=True` aleatoriza la orbita objetivo (modo general); `False` usa la
+    orbita fija tipo ISS. Emplea gamma alto por el horizonte largo de la mision.
+    """
     dir_modelo = os.path.join(AQUI, "modelo_keep", planeta)
     env = Monitor(KeepEnv(planeta=planeta, aleatorio=aleatorio))
     eval_env = Monitor(KeepEnv(planeta=planeta, aleatorio=aleatorio))

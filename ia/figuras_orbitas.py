@@ -6,6 +6,18 @@
 #  (modelo_hohmann). Salida en imagenes/ia/ (PDF vectorial + PNG, fondo oscuro).
 #    1) ia_orbita_hohmann_leo_geo  — LEO + elipse de transferencia + GEO, con los Δv
 # ═══════════════════════════════════════════════════════════════════════════
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ ÓRBITAS DIBUJADAS DE LAS MANIOBRAS — figuras geométricas para la memoria
+ Dibuja en el plano orbital las transferencias de Hohmann (subida LEO→GEO y bajada
+ GEO→LEO) con los Δv reales de los agentes 1 y 2, comparados con el óptimo → imagenes/ia/.
+
+ ÍNDICE DE FUNCIONES:
+   - guardar(fig, nombre)      : guarda la figura como PDF vectorial y PNG.
+   - fig_hohmann_leo_geo()     : transferencia de subida LEO→GEO con los Δv del agente 1.
+   - fig_transfer_bajada()     : transferencia de bajada GEO→LEO (frenado) con los Δv del agente 2.
+═══════════════════════════════════════════════════════════════════════════════
+"""
 
 import os
 
@@ -29,12 +41,16 @@ plt.rcParams.update({
 
 
 def guardar(fig, nombre):
+    """Guarda la figura en imagenes/ia/ como PDF vectorial y PNG (200 dpi), fondo oscuro."""
     fig.savefig(os.path.join(IMG, nombre + ".pdf"), bbox_inches="tight", facecolor=FONDO)
     fig.savefig(os.path.join(IMG, nombre + ".png"), dpi=200, bbox_inches="tight", facecolor=FONDO)
     print("  guardada:", nombre)
 
 
 def fig_hohmann_leo_geo():
+    """Figura ia_orbita_hohmann_leo_geo: dibuja la transferencia de Hohmann de subida
+    LEO→GEO (órbitas circulares + media elipse de transferencia) con los dos impulsos
+    reales del agente 1 y un cartel comparando su Δv total con el óptimo teórico."""
     # --- Δv del AGENTE (agente 1, especialista LEO->GEO) ---
     model = PPO.load(os.path.join(AQUI, "modelo_hohmann", "best_model"))
     env = HohmannEnv()
@@ -89,6 +105,8 @@ def fig_hohmann_leo_geo():
 
 # ── 2) Transferencia de BAJADA GEO->LEO (agente 2, frenando) ────────────────
 def fig_transfer_bajada():
+    """Figura ia_orbita_bajada_geo_leo: dibuja la transferencia de bajada GEO→LEO (frenado)
+    con los dos impulsos retrógrados del agente 2 y un cartel comparando su Δv con el óptimo."""
     model = PPO.load(os.path.join(AQUI, "modelo_transfer", "best_model"))
     r1, r2 = R_TIERRA + H_GEO, R_TIERRA + H_LEO     # parte de GEO, baja a LEO
     R_ratio = r2 / r1                               # < 1 (bajar)

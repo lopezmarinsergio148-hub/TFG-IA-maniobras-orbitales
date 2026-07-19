@@ -11,6 +11,29 @@
 #  LLM en llm_orquestador.py.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ LLM_HERRAMIENTAS — Herramientas de CÁLCULO que el LLM invoca (capa LLM, Bloque 5)
+ Define las 5 tools de cálculo del asistente conversacional. Cada una lanza el
+ agente RL ya entrenado (o un solver clásico de Lambert) y devuelve un diccionario
+ con DATOS REALES; el LLM solo los explica, nunca inventa cifras.
+
+ ÍNDICE DE FUNCIONES:
+   - tof_hohmann_dias(body_o, body_d, t0)               : tiempo de vuelo Hohmann por defecto (días).
+   - mejor_tof_dias(body_o, body_d, t0, n)              : tiempo de vuelo que minimiza el Δv (barrido de Lambert).
+   - _cargar_transfer()                                 : carga perezosa del Agente 2 (transferencia coplanar).
+   - _cargar_transfer3d()                               : carga perezosa del Agente 4 (cambio de plano 3D).
+   - _cargar_drag(planeta)                              : carga perezosa del Agente 3 de aerofrenado del planeta.
+   - _cargar_keep(planeta)                              : carga perezosa del Agente 5 de mantenimiento del planeta.
+   - _ingenua_keep(env)                                 : política de contraste (re-boost a tope) para mantenimiento.
+   - planificar_transferencia(planeta, h1, h2)          : transferencia coplanar (Agente 2).
+   - planificar_aerofrenado(planeta, apo_ini, apo_obj)  : aerofrenado (Agente 3).
+   - planificar_cambio_plano(planeta, h1, h2, di)       : transferencia con cambio de plano (Agente 4).
+   - planificar_mantenimiento(planeta, h, inc)          : mantenimiento orbital / station-keeping (Agente 5).
+   - transferencia_interplanetaria(o, d, fecha, tof)    : viaje entre planetas por Lambert (solver clásico).
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 
 import numpy as np
@@ -104,6 +127,7 @@ _modelos_keep = {}
 
 
 def _cargar_transfer():
+    """Carga (una sola vez, perezosa) el Agente 2 de transferencia coplanar."""
     global _modelo_transfer
     if _modelo_transfer is None:
         _modelo_transfer = PPO.load(os.path.join(AQUI, "modelo_transfer", "best_model"))
@@ -111,6 +135,7 @@ def _cargar_transfer():
 
 
 def _cargar_transfer3d():
+    """Carga (una sola vez, perezosa) el Agente 4 de cambio de plano (3D)."""
     global _modelo_transfer3d
     if _modelo_transfer3d is None:
         _modelo_transfer3d = PPO.load(os.path.join(AQUI, "modelo_transfer3d", "best_model"))
@@ -118,6 +143,7 @@ def _cargar_transfer3d():
 
 
 def _cargar_drag(planeta):
+    """Carga (perezosa, cacheada por planeta) el Agente 3 de aerofrenado del planeta dado."""
     if planeta not in _modelos_drag:
         _modelos_drag[planeta] = PPO.load(
             os.path.join(AQUI, "modelo_drag", planeta, "best_model"))
@@ -125,6 +151,7 @@ def _cargar_drag(planeta):
 
 
 def _cargar_keep(planeta):
+    """Carga (perezosa, cacheada por planeta) el Agente 5 de mantenimiento del planeta dado."""
     if planeta not in _modelos_keep:
         _modelos_keep[planeta] = PPO.load(
             os.path.join(AQUI, "modelo_keep", planeta, "best_model"))

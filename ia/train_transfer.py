@@ -13,6 +13,21 @@
 #  real) y guarda el mejor modelo visto -> asi "el mejor" se mide donde importa.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ TRAIN_TRANSFER — Entrenamiento del PPO en el entorno ADIMENSIONAL (Fase 1 gen.)
+
+ Generaliza la transferencia de Hohmann a CUALQUIER ratio de radios R (subir o
+ bajar) trabajando en variables adimensionales (mu=1, r1=1), lo que da
+ invariancia de escala entre planetas. Entrena con CURRICULUM: amplia el rango de
+ R por etapas reutilizando el mismo modelo (set_env); el EvalCallback evalua
+ siempre en el rango pleno y guarda el mejor. Salida: ia/modelo_transfer/best_model.zip.
+
+ ÍNDICE DE FUNCIONES:
+   - main() : recorre las etapas del curriculum, entrena el PPO y guarda el mejor modelo.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 
 from stable_baselines3 import PPO
@@ -36,6 +51,11 @@ ETAPAS = [
 
 
 def main():
+    """Entrena el PPO adimensional por etapas de curriculum y guarda el mejor modelo.
+
+    Evalua siempre sobre el rango pleno de R; en cada etapa amplia el rango del
+    entorno (set_env) sin reiniciar el contador de pasos entre tramos.
+    """
     eval_env = Monitor(TransferEnv(aleatorio=True, r_span=R_SPAN))   # SIEMPRE rango pleno
     eval_cb = EvalCallback(eval_env, best_model_save_path=DIR_MODELO, log_path=DIR_MODELO,
                            eval_freq=5000, n_eval_episodes=30,

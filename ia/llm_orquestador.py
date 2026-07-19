@@ -13,6 +13,27 @@
 #  La API key se lee de la variable de entorno GROQ_API_KEY (NO va en el código).
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ LLM_ORQUESTADOR — Capa LLM del TFG (Bloque 5): orquestador + explicador
+ Asistente conversacional que traduce peticiones en lenguaje natural a llamadas de
+ herramienta (tool use manual, multi-ronda, con memoria) contra el modelo Llama 3.3
+ servido por Groq. Expone el catálogo de 13 tools (5 de cálculo + 8 de dibujo), su
+ mapa de despacho a funciones Python y el system prompt acotado al dominio.
+
+ ÍNDICE DE FUNCIONES:
+   - _envolver(texto, ancho)              : envuelve el texto de respuesta a un ancho fijo para leerlo mejor.
+   - responder(mensajes, verbose, max_rondas) : bucle de tool use multi-ronda; amplía el historial y devuelve la respuesta.
+   - chat()                               : REPL interactivo con memoria conversacional.
+
+ OBJETOS DE MÓDULO:
+   - MODELO    : nombre del modelo de Groq en uso.
+   - TOOLS     : schemas de las 13 herramientas que lee el LLM (NO tocar).
+   - DISPATCH  : mapa nombre-de-herramienta -> función real de Python.
+   - SYSTEM    : system prompt que impone el dominio y la regla de no inventar cifras (NO tocar).
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 import json

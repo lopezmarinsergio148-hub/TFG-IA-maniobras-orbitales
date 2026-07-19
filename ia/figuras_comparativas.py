@@ -8,6 +8,19 @@
 #    3) ia_comp_margen     — margen de seguridad del perigeo (% sobre el crítico)
 #  Todo con datos reales (sin inventar): física King-Hele + atmósferas validadas.
 # ═══════════════════════════════════════════════════════════════════════════
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ COMPARATIVAS MULTI-PLANETA DEL AEROFRENADO — gráficas de barras para la memoria
+ Corre los 7 agentes PPO reales (escenario fijo) sobre env_drag y genera figuras
+ de barras comparando presión dinámica, duración y margen de seguridad → imagenes/ia/.
+
+ ÍNDICE DE FUNCIONES:
+   - metricas(p)                          : corre el agente y devuelve sus métricas comparativas.
+   - guardar(fig, nombre)                 : guarda la figura como PDF vectorial y PNG.
+   - etiqueta_barras(ax, barras, valores) : escribe el valor numérico encima de cada barra.
+   - main()                               : genera las 3 figuras (presión, tiempo, margen).
+═══════════════════════════════════════════════════════════════════════════════
+"""
 
 import os
 
@@ -54,18 +67,22 @@ def metricas(p):
 
 
 def guardar(fig, nombre):
+    """Guarda la figura en imagenes/ia/ como PDF vectorial y PNG (200 dpi), fondo oscuro."""
     fig.savefig(os.path.join(IMG, nombre + ".pdf"), bbox_inches="tight", facecolor=FONDO)
     fig.savefig(os.path.join(IMG, nombre + ".png"), dpi=200, bbox_inches="tight", facecolor=FONDO)
     print("  guardada:", nombre)
 
 
 def etiqueta_barras(ax, barras, valores, fmt="{:.2f}", dy=0):
+    """Escribe el valor numérico (formato fmt) centrado encima de cada barra."""
     for b, v in zip(barras, valores):
         ax.text(b.get_x() + b.get_width() / 2, b.get_height() + dy, fmt.format(v),
                 ha="center", va="bottom", fontsize=9, color="#eee")
 
 
 def main():
+    """Genera las 3 comparativas de barras (una por métrica): ia_comp_presion (presión
+    dinámica vs límite), ia_comp_tiempo (duración y pasadas) e ia_comp_margen (margen del perigeo)."""
     M = {p: metricas(p) for p in PLANETAS}
     nombres = [p.capitalize() for p in PLANETAS]
     cols = [COLORES[p] for p in PLANETAS]

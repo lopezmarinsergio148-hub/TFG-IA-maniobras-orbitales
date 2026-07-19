@@ -23,6 +23,29 @@
 #         python ia/evaluar_llm.py  --reset   (empieza de cero)
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ EVALUAR_LLM — Evaluacion FORMAL de la capa LLM (Bloque 5)
+
+ Evalua el orquestador (mismo cliente/tools que el asistente) sobre un banco de
+ prompts anotados, midiendo por consulta: HERRAMIENTA CORRECTA (elige el tool
+ adecuado o declina si es ajeno al dominio), ARGUMENTOS VALIDOS (planeta,
+ altitudes, fechas) y CIFRAS FIELES (los numeros de la respuesta salen de la
+ herramienta o de la peticion, no inventados). Guarda el transcript de cada
+ consulta en eval_llm_resultados.json y RETOMA donde se quedo si salta el limite
+ gratuito de Groq (429).
+
+ ÍNDICE DE FUNCIONES:
+   - correr_consulta(texto, max_rondas) : corre una consulta por el bucle de tool use.
+   - _num_variantes(tok)                : lecturas numericas de un token (coma/punto es-en).
+   - _numeros(texto)                    : conjunto de floats extraidos de un texto.
+   - puntuar(caso, salida)              : puntua las tres metricas de una consulta.
+   - cargar() / guardar(datos)          : checkpoint del progreso en JSON.
+   - resumen(datos)                     : tabla agregada por categoria.
+   - main()                             : bucle principal con checkpoint y resistencia al 429.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import re
 import sys
@@ -122,6 +145,7 @@ PROMPTS = [
 #  Motor: corre UNA consulta por el bucle de tool use, registrando todo.
 # ───────────────────────────────────────────────────────────────────────────
 def correr_consulta(texto, max_rondas=5):
+    """Corre una consulta por el bucle de tool use; devuelve respuesta final, tools y resultados."""
     mensajes = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": texto}]
     tools_llamadas, resultados = [], []
     for _ in range(max_rondas):
@@ -178,6 +202,7 @@ def _numeros(texto):
 
 
 def puntuar(caso, salida):
+    """Puntua una consulta: herramienta correcta, argumentos validos y cifras fieles."""
     categoria, texto, tool_esp, args_esp = caso
     tools = salida["tools"]
     nombres = [t["name"] for t in tools]
@@ -233,6 +258,7 @@ def puntuar(caso, salida):
 #  Bucle principal con checkpoint y resistencia al 429.
 # ───────────────────────────────────────────────────────────────────────────
 def cargar():
+    """Carga el progreso guardado (dict de resultados) del JSON, o {} si no existe."""
     if os.path.exists(SALIDA):
         with open(SALIDA, encoding="utf-8") as f:
             return json.load(f)
@@ -240,11 +266,13 @@ def cargar():
 
 
 def guardar(datos):
+    """Vuelca el dict de resultados al JSON de salida (checkpoint)."""
     with open(SALIDA, "w", encoding="utf-8") as f:
         json.dump(datos, f, ensure_ascii=False, indent=2)
 
 
 def resumen(datos):
+    """Imprime la tabla agregada por categoria (herramienta, args y cifras) sobre lo evaluado."""
     cats = {}
     for r in datos.values():
         c = r["categoria"]
@@ -280,6 +308,7 @@ def resumen(datos):
 
 
 def main():
+    """Recorre el banco de prompts (retomando lo pendiente), puntua cada uno e imprime el resumen."""
     if "--reset" in sys.argv and os.path.exists(SALIDA):
         os.remove(SALIDA)
     datos = cargar()

@@ -10,6 +10,27 @@
 #  Reutilizan el estilo (fondo oscuro) y la lógica de dibujo de figuras_orbitas.py.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ LLM_FIGURAS — Herramientas de DIBUJO de la capa LLM (Bloque 5)
+ Genera las figuras que devuelven las 8 tools de dibujo del asistente: cada función
+ dibuja la maniobra pedida con datos del agente RL o del solver REAL y devuelve la
+ ruta del PNG (o HTML interactivo) generado en imagenes/llm/. El LLM las invoca como
+ herramientas más; no producen figuras fijas de la memoria, sino parametrizadas.
+
+ ÍNDICE DE FUNCIONES:
+   - _abrir_imagen(ruta)                                  : abre el archivo con el visor del sistema (best-effort).
+   - dibujar_transferencia(planeta, h1, h2)              : PNG de una transferencia coplanar (Agente 2).
+   - dibujar_aerofrenado(planeta, apo_ini, apo_obj)      : PNG de la curva apogeo vs pasada (Agente 3).
+   - dibujar_interplanetaria(o, d, fecha, tof)           : PNG 2D del viaje heliocéntrico (Lambert).
+   - dibujar_interplanetaria_3d(o, d, fecha, tof)        : HTML 3D interactivo del viaje interplanetario (Plotly).
+   - dibujar_cambio_plano_3d(planeta, h1, h2, di)        : HTML 3D interactivo del cambio de plano (Agente 4).
+   - dibujar_aerofrenado_orbitas(planeta, apo_ini, apo_obj) : PNG de las órbitas encogiéndose (Agente 3).
+   - dibujar_mantenimiento(planeta, h, inc)              : PNG altitud vs tiempo del station-keeping (Agente 5).
+   - dibujar_porkchop(o, d, fecha_centro)                : PNG del porkchop / ventana de lanzamiento (Lambert).
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 import subprocess

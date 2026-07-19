@@ -14,6 +14,24 @@
 #  floats para no arrastrar unidades en el bucle de entrenamiento.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ BASELINES — óptimos clásicos de referencia ("juez")
+ Soluciones analíticas de la maniobra de Hohmann (con y sin cambio de plano),
+ dimensionales y adimensionales. No usan IA: sirven de patrón de mínimo Δv contra
+ el que se mide lo bien que ha aprendido cada agente de RL.
+
+ ÍNDICE DE FUNCIONES:
+   - velocidad_circular(r, mu)             : velocidad de una órbita circular.
+   - delta_v_hohmann(r1, r2, mu)           : Hohmann coplanar (dos impulsos).
+   - hohmann_leo_geo(...)                  : caso concreto LEO -> GEO de la Fase 1.
+   - _dv_combinada(v_a, v_b, ang)          : coste de un impulso que gira el plano.
+   - delta_v_hohmann_plano(r1, r2, di, mu) : Hohmann + cambio de plano óptimo.
+   - hohmann_plano_adim(R, di)             : óptimo adimensional 3D (juez agente 3D).
+   - hohmann_adim(R)                       : óptimo adimensional coplanar (juez 2D).
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 from collections import namedtuple
 
 import numpy as np

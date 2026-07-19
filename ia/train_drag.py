@@ -7,6 +7,20 @@
 #  (un ESPECIALISTA por planeta; subcarpeta propia para no pisar a los demás).
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ TRAIN_DRAG — Entrenamiento del agente de AEROFRENADO (drag / aerobraking)
+
+ Entrena por PPO (stable-baselines3) un especialista de aerofrenado POR PLANETA:
+ aprende a bajar el apogeo pasada tras pasada rozando la atmosfera sin destruir
+ la nave, ajustando el perigeo dentro de un corredor seguro. Guarda el mejor
+ modelo en ia/modelo_drag/<planeta>/best_model.zip.
+
+ ÍNDICE DE FUNCIONES:
+   - main(planeta, timesteps) : crea el entorno, lanza el PPO y guarda el mejor modelo.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 
@@ -20,6 +34,11 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 
 
 def main(planeta="marte", timesteps=400_000):
+    """Entrena el agente de aerofrenado del planeta dado y guarda el mejor modelo.
+
+    Monta el entorno AeroBrakingEnv, entrena un PPO con gamma alto (horizonte
+    largo) durante `timesteps` pasos y deja el best_model en la subcarpeta del planeta.
+    """
     dir_modelo = os.path.join(AQUI, "modelo_drag", planeta)
     env = Monitor(AeroBrakingEnv(planeta=planeta))
     eval_env = Monitor(AeroBrakingEnv(planeta=planeta))

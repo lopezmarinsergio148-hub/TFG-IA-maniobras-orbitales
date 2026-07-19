@@ -16,6 +16,30 @@
 #         python ia/evaluar_estadistico.py  20        (todos, N=20)
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ EVALUAR_ESTADISTICO — Evaluacion ESTADISTICA de los 5 agentes RL
+
+ Para cada agente corre N episodios sobre escenarios ALEATORIOS (semillas altas,
+ separadas de las de entrenamiento) y agrega tasa de exito y media +- desviacion
+ tipica de las metricas clave (y % de destruccion/timeout en aerofrenado). Pasa
+ del "50/50" a resultados reproducibles con media, desviacion y tasas. No
+ reentrena: solo mide sobre los best_model ya guardados.
+
+ ÍNDICE DE FUNCIONES:
+   - ms(v)                        : media +- desviacion tipica de una lista.
+   - eval_hohmann()               : agente 1, Hohmann LEO->GEO (escenario fijo).
+   - _corre_transfer(model,env,R) : fuerza un ratio R y devuelve (exceso%, error%).
+   - eval_transfer(n)             : agente 2, transferencias coplanares aleatorias.
+   - eval_transfer3d(n)           : agente 4, transferencias 3D con cambio de plano.
+   - eval_drag(n)                 : agente 3, aerofrenado por planeta.
+   - _ingenua_keep(env, obs)      : politica baseline de station-keeping.
+   - _correr_keep(env, pol, seed) : corre un episodio de mantenimiento; devuelve (dv, exito).
+   - eval_keep(n)                 : agente 5, mantenimiento por planeta vs ingenua.
+   - main(n)                      : lanza las cinco evaluaciones.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 
@@ -53,6 +77,7 @@ def ms(v):
 #  Agente 1 — Hohmann LEO->GEO (escenario FIJO, determinista: 1 evaluacion)
 # ───────────────────────────────────────────────────────────────────────────
 def eval_hohmann():
+    """Evalua el agente 1 (Hohmann LEO->GEO fijo) e imprime exceso de Δv y error de llegada."""
     model = PPO.load(os.path.join(AQUI, "modelo_hohmann", "best_model"))
     env = HohmannEnv()
     r1, r2 = R_TIERRA + H_LEO, R_TIERRA + H_GEO
@@ -84,6 +109,7 @@ def _corre_transfer(model, env, R):
 
 
 def eval_transfer(n):
+    """Evalua el agente 2 en n ratios R log-uniformes del rango util y reporta media, desviacion y exito."""
     model = PPO.load(os.path.join(AQUI, "modelo_transfer", "best_model"))
     env = TransferEnv(aleatorio=True)
     # Rango UTIL (el que declara la memoria): R en [0.2, 11], log-uniforme, subir y bajar.
@@ -117,6 +143,7 @@ def eval_transfer(n):
 #  Agente 4 — Transferencias 3D con cambio de plano (R, di aleatorios)
 # ───────────────────────────────────────────────────────────────────────────
 def eval_transfer3d(n):
+    """Evalua el agente 4 en n pares (R, di) aleatorios: exceso de Δv, error geometrico y de inclinacion."""
     model = PPO.load(os.path.join(AQUI, "modelo_transfer3d", "best_model"))
     env = Transfer3DEnv(aleatorio=True)
     exc, egeom, eincl = [], [], []
@@ -151,6 +178,7 @@ def eval_transfer3d(n):
 #  Agente 3 — Aerofrenado multi-planeta (por planeta, apogeo/objetivo aleatorios)
 # ───────────────────────────────────────────────────────────────────────────
 def eval_drag(n):
+    """Evalua el agente 3 (aerofrenado) planeta a planeta: exito, destruccion/timeout, pasadas, Δv y q_max."""
     print("\n" + "=" * 90)
     print("  AGENTE 3 — Aerofrenado (por planeta, escenarios aleatorios)")
     print("=" * 90)
@@ -194,11 +222,13 @@ def eval_drag(n):
 #  Agente 5 — Mantenimiento orbital (por planeta, objetivo aleatorio) vs ingenua
 # ───────────────────────────────────────────────────────────────────────────
 def _ingenua_keep(env, obs):
+    """Politica baseline de station-keeping: re-boost al maximo bajo la mitad inferior de la banda."""
     desv_km = (env.a - env.a_obj) / 1000.0
     return np.array([1.0 if desv_km < -BANDA_KM * 0.5 else -1.0], dtype=np.float32)
 
 
 def _correr_keep(env, politica, seed):
+    """Corre un episodio de mantenimiento con la politica dada; devuelve (dv_total, exito)."""
     obs, _ = env.reset(seed=seed)
     dv_total = 0.0
     term = trunc = False
@@ -210,6 +240,7 @@ def _correr_keep(env, politica, seed):
 
 
 def eval_keep(n):
+    """Evalua el agente 5 planeta a planeta: exito, Δv medio del agente vs ingenua y ahorro."""
     print("\n" + "=" * 88)
     print("  AGENTE 5 — Mantenimiento orbital (por planeta, objetivo aleatorio) vs ingenua")
     print("=" * 88)
@@ -225,6 +256,7 @@ def eval_keep(n):
         env = KeepEnv(planeta=planeta, aleatorio=True)
 
         def pol_ag(env, obs, _a=agente):
+            """Politica del agente PPO: predice la accion determinista para la observacion."""
             accion, _ = _a.predict(obs, deterministic=True)
             return accion
 
@@ -245,6 +277,7 @@ def eval_keep(n):
 
 
 def main(n=50):
+    """Lanza la evaluacion estadistica de los cinco agentes con N episodios cada uno."""
     print("#" * 90)
     print(f"#  EVALUACION ESTADISTICA DE LOS AGENTES RL   (N={n} episodios de evaluacion)")
     print(f"#  Semillas de evaluacion desde {SEMILLA_BASE} (separadas de las de entrenamiento)")

@@ -26,6 +26,19 @@
 #       desestabilizaba → recompensa SUAVE y continua (sin escalón).
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ ENV_HOHMANN — entorno Gymnasium de la Fase 1 (transferencia LEO -> GEO)
+ Entorno de un paso ("bandit contextual"): el agente da los dos Δv tangenciales de
+ una transferencia de Hohmann y el entorno hace el coasting hasta el apogeo y evalúa
+ lo circular que queda en r2. El óptimo de baselines.py hace de juez. La recompensa
+ es suave (premia LLEGAR sobre ahorrar Δv) tras corregir el reward hacking observado.
+
+ ÍNDICE DE CLASES:
+   - HohmannEnv : entorno Gym de un paso; obs = [r1, r2], acción = [Δv1, Δv2].
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
@@ -49,6 +62,8 @@ class HohmannEnv(gym.Env):
     metadata = {"render_modes": []}
 
     def __init__(self, mu=MU_TIERRA, aleatorio=False):
+        """Configura el entorno: parámetro gravitatorio, modo (fijo LEO->GEO o
+        aleatorio) y los espacios de observación (2 radios) y acción (2 Δv)."""
         super().__init__()
         self.mu = mu #El self. guarda las variables en el entorno.
         # aleatorio=False -> entrena SOLO el caso LEO->GEO (objetivo fijo): el agente
@@ -64,9 +79,12 @@ class HohmannEnv(gym.Env):
         self.r2 = None
 
     def _obs(self): #Prepara la observación que recibe le agente
+        """Observación: los dos radios (inicial y objetivo) normalizados por R_REF."""
         return np.array([self.r1 / R_REF, self.r2 / R_REF], dtype=np.float32)
 
     def reset(self, *, seed=None, options=None):
+        """Reinicia el episodio fijando r1 y r2 (por 'options', aleatorios o el caso
+        fijo LEO->GEO). Devuelve la observación inicial."""
         super().reset(seed=seed)
         # Permite fijar r1, r2 (para evaluar en un caso concreto, p.ej. LEO->GEO)
         if options and "r1" in options and "r2" in options:
@@ -81,6 +99,9 @@ class HohmannEnv(gym.Env):
         return self._obs(), {}
 
     def step(self, action):
+        """Aplica los dos impulsos: crea la elipse de transferencia, hace el coasting
+        al apogeo, circulariza y mide el error respecto a r2. Penaliza el escape.
+        Devuelve (obs, recompensa, terminado, truncado, info)."""
         # Reescala la acción [-1, 1] -> [0, DV_MAX]
         #El agente proporciona el impulso dando los valores entre [-1,1] y luego los transformamos con las líneas siguientes.
         #Es mejor de esta forma por las redes neuronales trabajan mejor con valores normalizados cercanos a 0.

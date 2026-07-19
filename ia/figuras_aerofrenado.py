@@ -12,6 +12,20 @@
 #    2) ia_aero_vs_tonta_<planeta>      — agente RL vs estrategia tonta (1 por planeta)
 #    3) ia_aero_orbita_<planeta>        — la órbita circularizándose (1 por planeta)
 # ═══════════════════════════════════════════════════════════════════════════
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ FIGURAS DEL AGENTE 3 (AEROFRENADO) — generación de gráficas para la memoria
+ Corre los agentes PPO reales (modelo_drag/<planeta>/best_model) sobre env_drag
+ (física King-Hele + atmósferas validadas) y vuelca las figuras a imagenes/ia/.
+
+ ÍNDICE DE FUNCIONES:
+   - correr(planeta, modelo, accion_fija) : corre un episodio y devuelve apogeo/perigeo por pasada.
+   - guardar(fig, nombre)                 : guarda la figura como PDF vectorial y PNG.
+   - fig_apogeo_pasada()                  : apogeo normalizado vs pasada, los 7 cuerpos en una figura.
+   - fig_vs_tonta_individual()            : agente RL vs estrategia tonta, una figura por planeta.
+   - fig_orbita_individual()              : la órbita circularizándose en el plano, una por planeta.
+═══════════════════════════════════════════════════════════════════════════════
+"""
 
 import os
 
@@ -55,6 +69,7 @@ def correr(planeta, modelo=None, accion_fija=None):
 
 
 def guardar(fig, nombre):
+    """Guarda la figura en imagenes/ia/ como PDF vectorial y PNG (200 dpi), fondo oscuro."""
     fig.savefig(os.path.join(IMG, nombre + ".pdf"), bbox_inches="tight", facecolor=FONDO)
     fig.savefig(os.path.join(IMG, nombre + ".png"), dpi=200, bbox_inches="tight", facecolor=FONDO)
     print("  guardada:", nombre)
@@ -62,6 +77,8 @@ def guardar(fig, nombre):
 
 # ── 1) Apogeo vs pasada (los 7 planetas en una sola figura) ─────────────────
 def fig_apogeo_pasada():
+    """Figura ia_aero_apogeo_pasada: apogeo normalizado (apo/apo inicial) frente al
+    número de pasada por el perigeo, con los 7 cuerpos superpuestos en una sola gráfica."""
     fig, ax = plt.subplots(figsize=(8.5, 5.2))
     ratio_obj = None
     for p in PLANETAS_FIG:
@@ -85,6 +102,8 @@ def fig_apogeo_pasada():
 
 # ── 2) Agente RL vs estrategia tonta — UNA figura por planeta ───────────────
 def fig_vs_tonta_individual():
+    """Figuras ia_aero_vs_tonta_<planeta>: compara el apogeo pasada a pasada del agente RL
+    frente a la estrategia tonta (perigeo alto fijo), una figura por cada planeta."""
     for p in PLANETAS_FIG:
         m = PPO.load(os.path.join(AQUI, "modelo_drag", p, "best_model"))
         apos_ag, pers_ag, info_ag, env = correr(p, modelo=m)
@@ -114,6 +133,8 @@ def fig_vs_tonta_individual():
 #  Vista en el plano orbital, planeta en el centro (0,0). Los ejes x/y son
 #  posición respecto al centro; el signo solo indica el lado, no distancia negativa.
 def fig_orbita_individual():
+    """Figuras ia_aero_orbita_<planeta>: dibuja en el plano orbital cómo la elipse se va
+    circularizando pasada a pasada (planeta en el centro), una figura por planeta."""
     th = np.linspace(0, 2 * np.pi, 320)
     for p in PLANETAS_FIG:
         m = PPO.load(os.path.join(AQUI, "modelo_drag", p, "best_model"))

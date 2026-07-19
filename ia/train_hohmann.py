@@ -8,6 +8,20 @@
 #  entorno (env_hohmann) y lo deja aprender por prueba y error.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ TRAIN_HOHMANN — Entrenamiento del agente PPO de la Fase 1 (Hohmann LEO->GEO)
+
+ Primer agente del TFG: aprende por PPO la transferencia de Hohmann de un
+ escenario FIJO (LEO -> GEO). No reimplementa PPO; apunta stable-baselines3 al
+ entorno HohmannEnv y lo deja aprender por prueba y error. Guarda el mejor
+ modelo en ia/modelo_hohmann/best_model.zip.
+
+ ÍNDICE DE FUNCIONES:
+   - main(timesteps) : crea el entorno, entrena el PPO y guarda el mejor modelo.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 
@@ -22,6 +36,11 @@ DIR_MODELO = os.path.join(AQUI, "modelo_hohmann")   # carpeta propia del agente 
 
 
 def main(timesteps=400_000):
+    """Entrena el PPO en el entorno Hohmann y guarda el mejor modelo visto.
+
+    Usa Monitor para registrar la recompensa por episodio y un EvalCallback que
+    evalua periodicamente y conserva el best_model (robusto ante la inestabilidad).
+    """
     # Monitor registra la recompensa por episodio (para ver el progreso).
     env = Monitor(HohmannEnv()) #El entorno donde entrena
     eval_env = Monitor(HohmannEnv())  #Un segundo entorno solo para evaluar (Lo usa el EvalCallback).

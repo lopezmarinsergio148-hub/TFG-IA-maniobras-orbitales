@@ -10,6 +10,21 @@
 #    3) ia_transfer3d_dv_vs_R     — Δv adimensional agente vs optimo (con Δi=28.5 fijo)
 #    4) ia_transfer3d_invariancia — el MISMO modelo en los 9 cuerpos (invariancia 3D)
 # ═══════════════════════════════════════════════════════════════════════════
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ FIGURAS DEL AGENTE 4 (TRANSFERENCIAS 3D CON CAMBIO DE PLANO) — para la memoria
+ Corre el agente PPO real (modelo_transfer3d/best_model) sobre env_transfer3d y lo
+ compara con el óptimo de Hohmann + cambio de plano, incluida una vista 3D → imagenes/ia/.
+
+ ÍNDICE DE FUNCIONES:
+   - geom_agente(model, R, di) : corre el agente y devuelve la geometría de la maniobra (impulsos, giro, elipse).
+   - guardar(fig, nombre)      : guarda la figura como PDF vectorial y PNG.
+   - fig_orbita_3d()           : la maniobra LEO→GEO con cambio de plano dibujada en 3D.
+   - fig_reparto()             : cómo se reparte el giro (grados abajo vs arriba) según Δi.
+   - fig_dv_vs_R()             : Δv adimensional agente vs óptimo a lo largo de R (Δi=28,5° fijo).
+   - fig_invariancia()         : exceso del agente sobre el óptimo con el mismo modelo en 9 cuerpos.
+═══════════════════════════════════════════════════════════════════════════════
+"""
 
 import os
 
@@ -36,6 +51,7 @@ MODELO = os.path.join(AQUI, "modelo_transfer3d", "best_model")
 
 
 def guardar(fig, nombre):
+    """Guarda la figura en imagenes/ia/ como PDF vectorial y PNG (200 dpi), fondo oscuro."""
     fig.savefig(os.path.join(IMG, nombre + ".pdf"), bbox_inches="tight", facecolor=FONDO)
     fig.savefig(os.path.join(IMG, nombre + ".png"), dpi=200, bbox_inches="tight", facecolor=FONDO)
     print("  guardada:", nombre)
@@ -62,6 +78,9 @@ def geom_agente(model, R, di):
 
 # ── 1) La maniobra en 3D: LEO inclinada -> transferencia -> GEO ──────────────
 def fig_orbita_3d():
+    """Figura ia_transfer3d_orbita: dibuja en 3D la maniobra LEO inclinada → elipse de
+    transferencia → GEO con cambio de plano, con los impulsos reales del agente y el cartel
+    de comparación con el óptimo. Ilustra que el grueso del giro se hace en el apogeo."""
     model = PPO.load(MODELO)
     R, di_deg = 6.22, 28.5
     di = np.radians(di_deg)
@@ -140,6 +159,9 @@ def fig_orbita_3d():
 
 # ── 2) Reparto del giro: que TROZO del Δi total se gira abajo vs arriba ──────
 def fig_reparto():
+    """Figura ia_transfer3d_reparto: para cada cambio de plano total Δi pedido, muestra qué
+    trozo del giro conviene hacer abajo (perigeo, caro) y cuánto arriba (apogeo, barato),
+    según el óptimo. Casi todo el giro se concentra en el apogeo."""
     # Solo el OPTIMO (el concepto fisico, limpio). Para cada cambio de plano total
     # pedido (Δi, el eje X = la diagonal), se ve que TROZO se gira abajo (perigeo) y
     # cual arriba (apogeo). La diagonal gris es el total; la franja verde (abajo) es
@@ -186,6 +208,8 @@ def fig_reparto():
 
 # ── 3) Δv adimensional agente vs optimo a lo largo de R (Δi = 28.5 fijo) ─────
 def fig_dv_vs_R():
+    """Figura ia_transfer3d_dv_vs_R: Δv total adimensional del agente frente al óptimo
+    (Hohmann + cambio de plano) a lo largo del ratio R, con Δi = 28,5° fijo."""
     model = PPO.load(MODELO)
     di = np.radians(28.5)
     Rs = np.linspace(1.12, R_SPAN, 90)
@@ -206,6 +230,9 @@ def fig_dv_vs_R():
 
 # ── 4) Invariancia de escala 3D: el MISMO modelo en los 9 cuerpos ───────────
 def fig_invariancia():
+    """Figura ia_transfer3d_invariancia: exceso del agente sobre el óptimo (%) a lo largo de R
+    para los 9 cuerpos con el MISMO modelo y Δi = 20° fijo; los marcadores se apilan porque el
+    resultado adimensional no depende del planeta."""
     model = PPO.load(MODELO)
     di = np.radians(20.0)                              # un cambio de plano representativo
     cuerpos = [("Venus", Venus, "#e9c46a", "o", 5.5), ("Tierra", Earth, "#4ea8de", "s", 5.0),

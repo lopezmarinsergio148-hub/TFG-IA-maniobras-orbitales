@@ -27,6 +27,21 @@
 #  pesos valgan en todos los planetas (escalas de longitud/velocidad muy distintas).
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ ENV_DRAG — entorno Gymnasium de aerofrenado multi-planeta (Fase 2)
+ Un especialista de RL por planeta que baja el apogeo aprovechando el drag en cada
+ paso por el perigeo. El agente controla la altitud de perigeo (corredor derivado
+ de la atmósfera + presión dinámica máxima Q_MAX) y debe frenar deprisa sin que la
+ presión dinámica destruya la nave. Recompensa normalizada para valer en todos.
+
+ ÍNDICE DE CLASES/FUNCIONES:
+   - _q_dinamica(planeta, h, h_apo)   : presión dinámica q en un perigeo dado.
+   - _altura_para_q(planeta, q, h_apo): altitud de perigeo que da una q objetivo.
+   - AeroBrakingEnv                   : entorno Gym; 1 paso = 1 pasada por perigeo.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 
@@ -100,6 +115,8 @@ class AeroBrakingEnv(gym.Env):
     metadata = {"render_modes": []}
 
     def __init__(self, planeta="marte", aleatorio=True):
+        """Configura el entorno para un planeta: escalas de normalización, corredor
+        de perigeo (derivado de su atmósfera y Q_MAX) y espacios de obs./acción."""
         super().__init__()
         if planeta not in PLANETAS or not PLANETAS[planeta].tiene_atmosfera:
             raise ValueError(f"'{planeta}' no es un planeta con atmósfera valido")
@@ -132,10 +149,13 @@ class AeroBrakingEnv(gym.Env):
         self.pasos = 0
 
     def _obs(self):
+        """Observación: [apogeo, perigeo, apogeo objetivo] normalizados por H_REF."""
         return np.array([self.h_apo / self.H_REF, self.h_per / self.H_REF,
                          self.h_apo_objetivo / self.H_REF], dtype=np.float32)
 
     def reset(self, *, seed=None, options=None):
+        """Reinicia el episodio: fija apogeo inicial y objetivo (por 'options',
+        aleatorio o caso histórico) y arranca el perigeo en su valor seguro."""
         super().reset(seed=seed)
         if options and "apo_ini_km" in options and "apo_obj_km" in options:
             # escenario FIJO dado en km (lo usa la herramienta del LLM)
@@ -158,6 +178,9 @@ class AeroBrakingEnv(gym.Env):
         return np.sqrt(self.MU * (2.0 / r - 1.0 / a))
 
     def step(self, action):
+        """Una pasada por el perigeo: fija el nuevo perigeo, cobra su Δv de ajuste,
+        aplica el frenado (o destruye la nave si q > Q_MAX) y calcula la recompensa.
+        Devuelve (obs, recompensa, terminado, truncado, info)."""
         self.pasos += 1
         # 1) El agente elige el perigeo de la próxima pasada (reescala [-1,1] -> corredor)
         h_per_nuevo = float(self.H_PER_MIN + (action[0] + 1.0) * 0.5 * (self.H_PER_MAX - self.H_PER_MIN))

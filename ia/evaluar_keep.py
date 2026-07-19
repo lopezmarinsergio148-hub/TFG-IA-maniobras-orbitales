@@ -8,6 +8,22 @@
 #  Uso:   python ia/evaluar_keep.py  [planeta]  [n_escenarios]
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ EVALUAR_KEEP — Evaluacion del agente de MANTENIMIENTO ORBITAL vs baseline ingenua
+
+ En el mismo escenario compara el agente PPO contra una estrategia INGENUA
+ (re-boost al maximo en cuanto la orbita cae a la mitad inferior de la banda).
+ Metricas por episodio: Δv total gastado (m/s) y si mantuvo la orbita en banda
+ toda la mision; agrega exito y ahorro medio de Δv sobre la ingenua.
+
+ ÍNDICE DE FUNCIONES:
+   - _correr(env, politica, seed) : corre un episodio con una politica; devuelve (dv, exito, h, inc).
+   - _ingenua(env, obs)           : politica baseline de re-boost por umbral.
+   - main(planeta, n, aleatorio)  : compara agente vs ingenua en n escenarios y resume.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 import sys
 
@@ -41,6 +57,7 @@ def _ingenua(env, obs):
 
 
 def main(planeta="tierra", n=8, aleatorio=False):
+    """Carga el agente del planeta y lo compara con la ingenua en n escenarios (Δv y exito)."""
     modelo = os.path.join(AQUI, "modelo_keep", planeta, "best_model.zip")
     if not os.path.exists(modelo):
         print(f"No encuentro el modelo: {modelo}\nEntrena primero con train_keep.py")
@@ -49,6 +66,7 @@ def main(planeta="tierra", n=8, aleatorio=False):
     env = KeepEnv(planeta=planeta, aleatorio=aleatorio)
 
     def pol_agente(env, obs):
+        """Politica del agente PPO: predice la accion determinista para la observacion."""
         accion, _ = agente.predict(obs, deterministic=True)
         return accion
 

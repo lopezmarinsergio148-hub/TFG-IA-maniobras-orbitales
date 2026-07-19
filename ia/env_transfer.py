@@ -22,6 +22,21 @@
 #  agente da los dos impulsos tangenciales y el entorno hace el "coasting".
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ ENV_TRANSFER — entorno Gymnasium de la Fase 1 GENERALIZADA (adimensional)
+ Transferencia coplanar entre dos órbitas circulares cualesquiera, en cualquier
+ planeta, con un único agente. Trabaja en unidades adimensionales (mu=1, r1=1), de
+ modo que el óptimo depende solo del ratio R=r2/r1: la política aprendida es
+ invariante de escala y cubre subir (R>1) y bajar (R<1). Episodio de un paso.
+
+ ÍNDICE DE CLASES/FUNCIONES:
+   - _map(a, lo, hi)   : reescala una acción [-1,1] al rango físico [lo, hi].
+   - _unmap(dv, lo, hi): inversa de _map (impulso físico -> acción).
+   - TransferEnv       : entorno Gym adimensional de un paso; acción = [dv1, dv2].
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
@@ -64,6 +79,8 @@ class TransferEnv(gym.Env):
     metadata = {"render_modes": []}
 
     def __init__(self, aleatorio=True, r_span=R_SPAN):
+        """Configura el entorno adimensional: modo (aleatorio o R fijo), el span de R
+        del currículum y los espacios de observación (log R) y acción (2 impulsos)."""
         super().__init__()
         # aleatorio=True  -> sortea R en todo el rango (politica GENERAL): es el
         #   modo de entrenamiento (subir y bajar, cualquier ratio).
@@ -83,9 +100,12 @@ class TransferEnv(gym.Env):
         self.R = None
 
     def _obs(self):
+        """Observación: log(R) normalizado por LOG_RMAX (R=1 -> 0; subir>0; bajar<0)."""
         return np.array([np.log(self.R) / LOG_RMAX], dtype=np.float32)
 
     def reset(self, *, seed=None, options=None): #El * obliga a que seed y options se indiquen por nombre.
+        """Reinicia el episodio fijando el ratio R (por 'options', log-uniforme dentro
+        del span del currículum, o el caso fijo LEO->GEO). Devuelve la observación."""
         #Además el seed sirve para fijar una semilla y que los valores aleatorios puedan repetirse y options sirve para pasar datos concretos al reiniciar, por ejemplo fijar un ratio R.
         super().reset(seed=seed) #Generador aleatorio del entorno.
         if options and "R" in options:
@@ -100,6 +120,10 @@ class TransferEnv(gym.Env):
         return self._obs(), {}
 
     def step(self, action):
+        """Aplica los dos impulsos con signo: crea la elipse de transferencia, hace el
+        coasting a la otra ápside, ajusta la órbita final y mide el error logarítmico
+        respecto a R. Penaliza escape/órbitas degeneradas.
+        Devuelve (obs, recompensa, terminado, truncado, info)."""
         # Reescala cada accion [-1, 1] a su rango fisico (asimetrico, con signo)
         dv1 = float(_map(action[0], DV1_LO, DV1_HI))
         dv2 = float(_map(action[1], DV2_LO, DV2_HI))

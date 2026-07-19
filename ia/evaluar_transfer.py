@@ -13,6 +13,23 @@
 #              -> Demuestra la invariancia de escala (el nucleo del enfoque).
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ EVALUAR_TRANSFER — Evaluacion del agente ADIMENSIONAL (Fase 1 generalizada)
+
+ Comprueba la invariancia de escala del agente coplanar en dos partes:
+   PARTE A: en la Tierra, resuelve varios ratios R (subir y bajar) y los compara
+            con el optimo de Hohmann adimensional.
+   PARTE B: el MISMO modelo, sin reentrenar, en otros planetas (Marte, Jupiter):
+            se le pasa el R real, devuelve el impulso adimensional y se traduce a
+            km/s multiplicando por la velocidad circular v_c1 del planeta.
+
+ ÍNDICE DE FUNCIONES:
+   - pedir_maniobra(model, R) : ejecuta la maniobra del agente para el ratio R y devuelve su info.
+   - main()                   : corre las partes A y B e imprime las tablas comparativas.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 
 import numpy as np
@@ -37,6 +54,7 @@ def pedir_maniobra(model, R):
 
 
 def main():
+    """Evalua el agente adimensional en la Tierra (parte A) y en otros planetas (parte B)."""
     model = PPO.load(MODELO)
 
     # ── PARTE A: la Tierra, varios ratios (subir y bajar) ───────────────────

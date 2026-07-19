@@ -10,6 +10,24 @@
 #            multiplicando por la v_c1 del planeta -> invariancia de escala en 3D.
 # ═══════════════════════════════════════════════════════════════════════════
 
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ EVALUAR_TRANSFER3D — Evaluacion del agente 3D (Hohmann + cambio de plano)
+
+ Como evaluar_transfer pero en 3D (salto de radio R mas cambio de inclinacion di):
+   PARTE A: en la Tierra, varios pares (R, di) frente al optimo del juez
+            (baselines.delta_v_hohmann_plano); mide exceso de Δv, error geometrico
+            y error de inclinacion de llegada.
+   PARTE B: el MISMO modelo, sin reentrenar, en otros planetas: se pasa (R, di)
+            real, devuelve el Δv adimensional y se traduce a km/s por la v_c1 del
+            planeta -> invariancia de escala tambien en 3D.
+
+ ÍNDICE DE FUNCIONES:
+   - pedir(model, R, di) : ejecuta la maniobra 3D del agente para (R, di) y devuelve su info.
+   - main()              : corre las partes A y B e imprime las tablas comparativas.
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
 import os
 
 import numpy as np
@@ -25,6 +43,7 @@ MODELO = os.path.join(AQUI, "modelo_transfer3d", "best_model")
 
 
 def pedir(model, R, di):
+    """Ejecuta la maniobra 3D del agente para el ratio R y el cambio de plano di; devuelve el info."""
     env = Transfer3DEnv()
     obs, _ = env.reset(options={"R": R, "di": di})
     action, _ = model.predict(obs, deterministic=True)
@@ -33,6 +52,7 @@ def pedir(model, R, di):
 
 
 def main():
+    """Evalua el agente 3D en la Tierra (parte A) y en otros planetas (parte B)."""
     model = PPO.load(MODELO)
 
     # ── PARTE A: la Tierra, varios (R, di) ──────────────────────────────────

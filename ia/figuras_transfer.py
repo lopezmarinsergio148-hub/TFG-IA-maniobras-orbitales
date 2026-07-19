@@ -7,6 +7,19 @@
 #    1) ia_transfer_dv_vs_R    — Δv adimensional del agente vs óptimo (subir y bajar)
 #    2) ia_transfer_invariancia — el MISMO modelo en varios planetas (invariancia de escala)
 # ═══════════════════════════════════════════════════════════════════════════
+"""
+═══════════════════════════════════════════════════════════════════════════════
+ FIGURAS DEL AGENTE 2 (TRANSFERENCIAS COPLANARES) — gráficas para la memoria
+ Corre el agente PPO real (modelo_transfer/best_model) sobre env_transfer y lo
+ compara con el óptimo de Hohmann, mostrando su invariancia de escala → imagenes/ia/.
+
+ ÍNDICE DE FUNCIONES:
+   - dv_agente_adim(model, R) : Δv total adimensional que da el agente para un ratio R.
+   - guardar(fig, nombre)     : guarda la figura como PDF vectorial y PNG.
+   - fig_dv_vs_R()            : Δv adimensional agente vs óptimo de Hohmann a lo largo de R.
+   - fig_invariancia()        : exceso del agente sobre el óptimo con el mismo modelo en 9 cuerpos.
+═══════════════════════════════════════════════════════════════════════════════
+"""
 
 import os
 
@@ -33,6 +46,7 @@ MODELO = os.path.join(AQUI, "modelo_transfer", "best_model")
 
 
 def guardar(fig, nombre):
+    """Guarda la figura en imagenes/ia/ como PDF vectorial y PNG (200 dpi), fondo oscuro."""
     fig.savefig(os.path.join(IMG, nombre + ".pdf"), bbox_inches="tight", facecolor=FONDO)
     fig.savefig(os.path.join(IMG, nombre + ".png"), dpi=200, bbox_inches="tight", facecolor=FONDO)
     print("  guardada:", nombre)
@@ -49,6 +63,8 @@ def dv_agente_adim(model, R):
 
 # ── 1) Δv adimensional: agente vs óptimo de Hohmann (subir y bajar) ─────────
 def fig_dv_vs_R():
+    """Figura ia_transfer_dv_vs_R: Δv total adimensional del agente RL frente al óptimo de
+    Hohmann teórico a lo largo del ratio R = r₂/r₁ (subir y bajar), en escala log."""
     model = PPO.load(MODELO)
     Rs = np.logspace(np.log10(1 / R_SPAN), np.log10(R_SPAN), 160)
     dv_opt = [hohmann_adim(R)[2] for R in Rs]
@@ -73,6 +89,9 @@ def fig_dv_vs_R():
 
 # ── 2) Invariancia de escala: el MISMO modelo en varios planetas ────────────
 def fig_invariancia():
+    """Figura ia_transfer_invariancia: exceso del agente sobre el óptimo (%) a lo largo de R
+    para los 9 cuerpos con el MISMO modelo; los marcadores se apilan porque la transferencia
+    es kepleriana pura y el resultado adimensional no depende del planeta."""
     model = PPO.load(MODELO)
     # marcadores PEQUEÑOS por cuerpo (se solapan a propósito: caen en el mismo punto).
     # Los 9 cuerpos del proyecto: la transferencia es kepleriana pura, así que vale para
